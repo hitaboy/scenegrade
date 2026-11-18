@@ -1,0 +1,4 @@
+dist
+pnpm-lock.yaml
+packages/core/src/color/luts/*.bin
+packages/exr-wasm/dist

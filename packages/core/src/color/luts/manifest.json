@@ -1,0 +1,215 @@
+{
+  "ocioConfig": "studio-config-v5.0.0_aces-v2.1_ocio-v2.6",
+  "ocioVersion": "2.6.0",
+  "shaper": {
+    "space": "acescct",
+    "min": 0.0,
+    "max": 1.1255707762557077
+  },
+  "deltaEMetric": {
+    "sdr": "CIEDE2000, display-referred CIELAB (D65, display white = L 100)",
+    "hdr": "Delta E ITP (ITU-R BT.2124), absolute luminance"
+  },
+  "views": [
+    {
+      "id": "srgb-aces2-sdr709",
+      "display": "sRGB - Display",
+      "view": "ACES 2.0 - SDR 100 nits (Rec.709)",
+      "label": "sRGB \u00b7 ACES 2.0 - SDR 100 nits (Rec.709)",
+      "size": 49,
+      "hdr": false,
+      "peakNits": 100,
+      "encoding": "srgb",
+      "primaries": "rec709",
+      "ocioConfig": "studio-config-v5.0.0_aces-v2.1_ocio-v2.6",
+      "ocioVersion": "2.6.0",
+      "file": "srgb-aces2-sdr709.bin",
+      "bytes": 941192,
+      "deltaE": {
+        "mean": 0.1582,
+        "p99": 0.8032,
+        "max": 1.3757
+      },
+      "deltaECube": {
+        "mean": 0.0705,
+        "p99": 0.6551,
+        "max": 4.5995
+      }
+    },
+    {
+      "id": "rec1886-aces2-sdr709",
+      "display": "Rec.1886 Rec.709 - Display",
+      "view": "ACES 2.0 - SDR 100 nits (Rec.709)",
+      "label": "Rec.1886 Rec.709 \u00b7 ACES 2.0 - SDR 100 nits (Rec.709)",
+      "size": 49,
+      "hdr": false,
+      "peakNits": 100,
+      "encoding": "bt1886",
+      "primaries": "rec709",
+      "ocioConfig": "studio-config-v5.0.0_aces-v2.1_ocio-v2.6",
+      "ocioVersion": "2.6.0",
+      "file": "rec1886-aces2-sdr709.bin",
+      "bytes": 941192,
+      "deltaE": {
+        "mean": 0.1542,
+        "p99": 0.7785,
+        "max": 1.3911
+      },
+      "deltaECube": {
+        "mean": 0.0708,
+        "p99": 0.665,
+        "max": 4.1802
+      }
+    },
+    {
+      "id": "displayp3-aces2-sdrp3",
+      "display": "Display P3 - Display",
+      "view": "ACES 2.0 - SDR 100 nits (P3 D65)",
+      "label": "Display P3 \u00b7 ACES 2.0 - SDR 100 nits (P3 D65)",
+      "size": 49,
+      "hdr": false,
+      "peakNits": 100,
+      "encoding": "srgb",
+      "primaries": "p3d65",
+      "ocioConfig": "studio-config-v5.0.0_aces-v2.1_ocio-v2.6",
+      "ocioVersion": "2.6.0",
+      "file": "displayp3-aces2-sdrp3.bin",
+      "bytes": 941192,
+      "deltaE": {
+        "mean": 0.1373,
+        "p99": 0.7787,
+        "max": 1.3087
+      },
+      "deltaECube": {
+        "mean": 0.0738,
+        "p99": 0.664,
+        "max": 3.4465
+      }
+    },
+    {
+      "id": "pq-aces2-hdr1000-p3",
+      "display": "Rec.2100-PQ - Display",
+      "view": "ACES 2.0 - HDR 1000 nits (P3 D65)",
+      "label": "Rec.2100-PQ \u00b7 ACES 2.0 - HDR 1000 nits (P3 D65)",
+      "size": 49,
+      "hdr": true,
+      "peakNits": 1000,
+      "encoding": "pq",
+      "primaries": "rec2020",
+      "ocioConfig": "studio-config-v5.0.0_aces-v2.1_ocio-v2.6",
+      "ocioVersion": "2.6.0",
+      "file": "pq-aces2-hdr1000-p3.bin",
+      "bytes": 941192,
+      "deltaE": {
+        "mean": 0.3586,
+        "p99": 1.5835,
+        "max": 6.842
+      },
+      "deltaECube": {
+        "mean": 0.3575,
+        "p99": 3.6379,
+        "max": 17.4351
+      }
+    },
+    {
+      "id": "pq-aces2-hdr1000-rec2020",
+      "display": "Rec.2100-PQ - Display",
+      "view": "ACES 2.0 - HDR 1000 nits (Rec.2020)",
+      "label": "Rec.2100-PQ \u00b7 ACES 2.0 - HDR 1000 nits (Rec.2020)",
+      "size": 49,
+      "hdr": true,
+      "peakNits": 1000,
+      "encoding": "pq",
+      "primaries": "rec2020",
+      "ocioConfig": "studio-config-v5.0.0_aces-v2.1_ocio-v2.6",
+      "ocioVersion": "2.6.0",
+      "file": "pq-aces2-hdr1000-rec2020.bin",
+      "bytes": 941192,
+      "deltaE": {
+        "mean": 0.3175,
+        "p99": 1.4632,
+        "max": 3.7516
+      },
+      "deltaECube": {
+        "mean": 0.5026,
+        "p99": 5.9843,
+        "max": 31.533
+      }
+    },
+    {
+      "id": "displayp3hdr-aces2-hdr1000-p3",
+      "display": "Display P3 HDR - Display",
+      "view": "ACES 2.0 - HDR 1000 nits (P3 D65)",
+      "label": "Display P3 HDR \u00b7 ACES 2.0 - HDR 1000 nits (P3 D65)",
+      "size": 49,
+      "hdr": true,
+      "peakNits": 1000,
+      "encoding": "srgb",
+      "primaries": "p3d65",
+      "ocioConfig": "studio-config-v5.0.0_aces-v2.1_ocio-v2.6",
+      "ocioVersion": "2.6.0",
+      "file": "displayp3hdr-aces2-hdr1000-p3.bin",
+      "bytes": 941192,
+      "deltaE": {
+        "mean": 0.508,
+        "p99": 1.8633,
+        "max": 6.564
+      },
+      "deltaECube": {
+        "mean": 0.342,
+        "p99": 3.3029,
+        "max": 24.2867
+      }
+    },
+    {
+      "id": "hlg-aces2-hdr1000-p3",
+      "display": "Rec.2100-HLG - Display",
+      "view": "ACES 2.0 - HDR 1000 nits (P3 D65)",
+      "label": "Rec.2100-HLG \u00b7 ACES 2.0 - HDR 1000 nits (P3 D65)",
+      "size": 49,
+      "hdr": true,
+      "peakNits": 1000,
+      "encoding": "hlg",
+      "primaries": "rec2020",
+      "ocioConfig": "studio-config-v5.0.0_aces-v2.1_ocio-v2.6",
+      "ocioVersion": "2.6.0",
+      "file": "hlg-aces2-hdr1000-p3.bin",
+      "bytes": 941192,
+      "deltaE": {
+        "mean": 0.3721,
+        "p99": 1.5722,
+        "max": 5.8187
+      },
+      "deltaECube": {
+        "mean": 0.3672,
+        "p99": 3.5206,
+        "max": 26.2001
+      }
+    },
+    {
+      "id": "srgb-aces1-sdrvideo",
+      "display": "sRGB - Display",
+      "view": "ACES 1.0 - SDR Video",
+      "label": "sRGB \u00b7 ACES 1.0 - SDR Video",
+      "size": 49,
+      "hdr": false,
+      "peakNits": 100,
+      "encoding": "srgb",
+      "primaries": "rec709",
+      "ocioConfig": "studio-config-v2.2.0_aces-v1.3_ocio-v2.4",
+      "ocioVersion": "2.6.0",
+      "file": "srgb-aces1-sdrvideo.bin",
+      "bytes": 941192,
+      "deltaE": {
+        "mean": 0.1201,
+        "p99": 0.8099,
+        "max": 1.8162
+      },
+      "deltaECube": {
+        "mean": 0.0541,
+        "p99": 0.4047,
+        "max": 1.6571
+      }
+    }
+  ]
+}

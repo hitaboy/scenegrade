@@ -1,0 +1,41 @@
+name: Demo (GitHub Pages)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - uses: astral-sh/setup-uv@v5
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pnpm install --frozen-lockfile
+      - run: packages/exr-wasm/scripts/build-wasm.sh
+      - run: pnpm media
+      - name: Build demo
+        env:
+          DEMO_BASE: /${{ github.event.repository.name }}/
+        run: pnpm build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/demo/dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,31 @@
+{
+  "name": "@scenelinear/element",
+  "version": "0.1.0",
+  "description": "<scenelinear-player>: drop-in Web Component for ACES-managed playback of EXR, ProRes and video, with scopes, false colour and zebra.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/scenelinear-player.js",
+  "module": "./dist/scenelinear-player.js",
+  "exports": {
+    ".": "./dist/scenelinear-player.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@scenelinear/core": "workspace:*",
+    "@scenelinear/svelte": "workspace:*",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/node": "^22",
+    "@webgpu/types": "^0.1.74",
+    "svelte": "^5.58.0",
+    "svelte-check": "^4.7.8",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.8"
+  }
+}

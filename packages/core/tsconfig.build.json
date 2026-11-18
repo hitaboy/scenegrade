@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": [
+      "@webgpu/types",
+      "node"
+    ],
+    "outDir": "dist",
+    "rootDir": "src",
+    "noEmit": false,
+    "rewriteRelativeImportExtensions": true,
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@scenelinear/exr-wasm": [
+        "../exr-wasm/dist/index.d.ts"
+      ]
+    }
+  },
+  "include": [
+    "src"
+  ]
+}

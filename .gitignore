@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+coverage/
+test-results/
+playwright-report/
+.venv/
+__pycache__/
+/apps/demo/public/media/generated/
+/packages/exr-wasm/build/
+.claude/settings.local.json
+/packages/exr-wasm/dist-wasm/

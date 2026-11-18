@@ -1,0 +1,27 @@
+{
+  "name": "@scenelinear/demo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@scenelinear/core": "workspace:*",
+    "@scenelinear/svelte": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/node": "^22",
+    "@webgpu/types": "^0.1.74",
+    "svelte": "^5.58.0",
+    "svelte-check": "^4.7.8",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.8"
+  }
+}

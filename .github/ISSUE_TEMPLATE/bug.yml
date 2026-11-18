@@ -1,0 +1,18 @@
+name: Bug report
+description: Something renders, decodes or plays wrong
+labels: [bug]
+body:
+  - type: textarea
+    attributes:
+      label: What happened
+      description: Expected vs actual. For colour issues, include probe values or a screenshot of the scopes.
+    validations: { required: true }
+  - type: textarea
+    attributes:
+      label: Media
+      description: Format, codec, compression, resolution, colour space. A sample file (or how to make one) helps most.
+  - type: input
+    attributes:
+      label: Browser, OS and GPU
+      placeholder: Chrome 142, macOS 26.5, Apple M3 Pro
+    validations: { required: true }

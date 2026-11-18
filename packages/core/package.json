@@ -1,0 +1,68 @@
+{
+  "name": "@scenelinear/core",
+  "version": "0.1.0",
+  "description": "Headless WebGPU engine for ACES-managed playback of EXR, ProRes and video: colour pipeline, scopes, overlays and frame-accurate playback.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./color": {
+      "types": "./src/color/index.ts",
+      "default": "./src/color/index.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/postbuild.mjs",
+    "test": "vitest run",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@scenelinear/exr-wasm": "workspace:*",
+    "@mediabunny/prores": "^1.66.1",
+    "mediabunny": "^1.66.1"
+  },
+  "devDependencies": {
+    "@webgpu/types": "^0.1.74",
+    "@types/node": "^22.0.0",
+    "typescript": "~6.0.3",
+    "vitest": "^4.0.0"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./color": {
+        "types": "./dist/color/index.d.ts",
+        "default": "./dist/color/index.js"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hitaboy/scenelinear.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "aces",
+    "exr",
+    "openexr",
+    "prores",
+    "webgpu",
+    "color-management",
+    "ocio",
+    "video-player",
+    "scopes",
+    "vfx"
+  ]
+}

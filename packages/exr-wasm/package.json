@@ -1,0 +1,45 @@
+{
+  "name": "@scenelinear/exr-wasm",
+  "version": "0.1.0",
+  "description": "OpenEXR (OpenEXRCore) decoder compiled to WebAssembly, with a Web Worker pool. All production compressions incl. PIZ, DWAA/DWAB, B44, HTJ2K.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./dist-wasm/openexr.wasm": "./dist-wasm/openexr.wasm",
+    "./dist-wasm/openexr.mjs": "./dist-wasm/openexr.mjs"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./dist-wasm/openexr.wasm": "./dist-wasm/openexr.wasm",
+      "./dist-wasm/openexr.mjs": "./dist-wasm/openexr.mjs"
+    }
+  },
+  "files": [
+    "dist",
+    "dist-wasm",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build:wasm": "bash scripts/build-wasm.sh",
+    "build": "tsc -p tsconfig.build.json && node scripts/postbuild.mjs",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "bench": "vitest bench --run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "@vitest/web-worker": "^4.1.11",
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.11"
+  }
+}

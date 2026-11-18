@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: astral-sh/setup-uv@v5
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Cache OpenEXR WASM build
+        id: wasm-cache
+        uses: actions/cache@v4
+        with:
+          path: packages/exr-wasm/dist-wasm
+          key: exr-wasm-${{ hashFiles('packages/exr-wasm/scripts/**', 'packages/exr-wasm/src-c/**') }}
+      - name: Build OpenEXR → WASM (Docker, emscripten/emsdk)
+        if: steps.wasm-cache.outputs.cache-hit != 'true'
+        run: packages/exr-wasm/scripts/build-wasm.sh
+
+      - name: Generate test media
+        run: pnpm media
+
+      - name: Verify the committed ACES LUTs are reproducible
+        run: |
+          pnpm bake:luts
+          git diff --exit-code -- packages/core/src/color/luts packages/core/src/color/generated.ts
+
+      - run: pnpm check
+      - run: pnpm test
+      - run: pnpm build
+
+      - name: E2E (Chromium, WebGPU via SwiftShader)
+        env:
+          PW_CHROMIUM: '1'
+        run: |
+          pnpm --filter @scenelinear/demo exec playwright install --with-deps chromium
+          pnpm e2e
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/demo/test-results

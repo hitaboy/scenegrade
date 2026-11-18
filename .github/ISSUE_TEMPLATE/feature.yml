@@ -1,0 +1,9 @@
+name: Feature request
+description: Suggest a format, tool or integration
+labels: [enhancement]
+body:
+  - type: textarea
+    attributes:
+      label: What and why
+      description: The workflow you need it for.
+    validations: { required: true }
