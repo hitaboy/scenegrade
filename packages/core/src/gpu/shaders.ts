@@ -11,6 +11,8 @@
  */
 
 /** Uniform block shared by display + scopes. Keep in sync with `packDisplayUniforms` in renderer.ts. */
+import { GRADE_BINDINGS_WGSL, GRADE_WGSL } from '../grade/wgsl.js';
+
 export const DISPLAY_UNIFORMS_WGSL = /* wgsl */ `
 struct U {
   canvas   : vec4f, // w, h, 1/w, 1/h (device pixels)
@@ -207,7 +209,7 @@ const BINDINGS_WGSL = /* wgsl */ `
 @group(0) @binding(4) var userLut : texture_3d<f32>;
 @group(0) @binding(5) var linSmp : sampler;
 @group(0) @binding(6) var nearSmp : sampler;
-`;
+` + GRADE_BINDINGS_WGSL + GRADE_WGSL;
 
 const CHAIN_WGSL = /* wgsl */ `
 fn lutCoord(c: vec3f, n: f32) -> vec3f {
@@ -222,6 +224,7 @@ fn gradeScene(s: vec3f) -> vec3f {
     let y = dot(c, R_LUMA_AP1);
     c = vec3f(y) + (c - vec3f(y)) * sat;
   }
+  c = sl_grade(c);
   if (u.modes2.z == 1u || u.modes2.y == 1u) {
     var cct = sl_acescg_to_acescct(c);
     if (u.modes2.z == 1u) {

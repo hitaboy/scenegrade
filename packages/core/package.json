@@ -13,6 +13,10 @@
     "./color": {
       "types": "./src/color/index.ts",
       "default": "./src/color/index.ts"
+    },
+    "./grade": {
+      "types": "./src/grade/index.ts",
+      "default": "./src/grade/index.ts"
     }
   },
   "files": [
@@ -45,6 +49,10 @@
       "./color": {
         "types": "./dist/color/index.d.ts",
         "default": "./dist/color/index.js"
+      },
+      "./grade": {
+        "types": "./dist/grade/index.d.ts",
+        "default": "./dist/grade/index.js"
       }
     }
   },

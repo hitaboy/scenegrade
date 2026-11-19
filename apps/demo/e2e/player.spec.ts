@@ -140,3 +140,69 @@ test('scopes, overlays and compare render without WebGPU validation errors', asy
   expect(hist).toBe(true);
   expect(errors.filter((e) => /WebGPU|GPUValidation|scenelinear/.test(e))).toEqual([]);
 });
+
+test('grade: on-screen pixel matches the CPU reference; undo restores the image', async ({
+  page,
+}) => {
+  await setup(page);
+  const errors: string[] = [];
+  page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+  const r = await load(page, `${base}exr/chart_zip.exr`);
+  expect(r.error).toBeNull();
+  const res = await page.evaluate(async () => {
+    const c = (globalThis as any).scenelinear;
+    const core = (globalThis as any).scenelinearCore;
+    const p = c.player;
+    p.zoomTo(1, { x: 0, y: 0 });
+    p.panBy(-p.state.view.panX, -p.state.view.panY);
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    const pixel = async (x: number, y: number) => {
+      await wait(250);
+      const bmp = await createImageBitmap(await p.snapshot());
+      const cv = new OffscreenCanvas(bmp.width, bmp.height);
+      const ctx = cv.getContext('2d')!;
+      ctx.drawImage(bmp, 0, 0);
+      return Array.from(ctx.getImageData(x, y, 1, 1).data)
+        .slice(0, 3)
+        .map((v) => v / 255);
+    };
+    const before = await pixel(960, 162);
+    p.setGrade({
+      nodes: [
+        {
+          linear: { exposure: 0.5, temperature: 4800 },
+          primaries: { contrast: 1.2, saturation: 1.3, lift: [0, 0, 0.02, 0] },
+          curves: {
+            y: [
+              [0, 0.02],
+              [0.5, 0.55],
+              [1, 1],
+            ],
+            hueSat: [[0, -0.5]],
+          },
+        },
+        { logWheels: { highlights: [0.02, 0, -0.02] }, mix: 0.7 },
+      ],
+    });
+    const lut = await core.color.loadViewLut('srgb-aces2-sdr709');
+    const out: { expected: number[]; px: number[] }[] = [];
+    for (const [x, y] of [
+      [960, 162],
+      [300, 500],
+      [700, 420],
+    ]) {
+      const probe = await p.probe(x, y);
+      out.push({ expected: core.color.applyViewCPU(lut, probe.graded), px: await pixel(x, y) });
+    }
+    p.undo();
+    const after = await pixel(960, 162);
+    return { before, after, out, canUndo: p.state.canUndo };
+  });
+  for (const o of res.out) {
+    for (let i = 0; i < 3; i++) expect(Math.abs(o.px[i] - o.expected[i])).toBeLessThan(2.5 / 255);
+  }
+  expect(res.out[0].px).not.toEqual(res.before);
+  expect(res.after).toEqual(res.before);
+  expect(res.canUndo).toBe(false);
+  expect(errors.filter((e) => /WGSL|GPUValidation|Invalid/i.test(e))).toEqual([]);
+});

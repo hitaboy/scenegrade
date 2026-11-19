@@ -6,6 +6,7 @@ import {
   type ProbeResult,
   type MediaInput,
   type OpenOptions,
+  type Grade,
 } from '@scenelinear/core';
 
 /**
@@ -16,6 +17,8 @@ export class PlayerController {
   readonly player: Player;
   state = $state<PlayerState>(null as unknown as PlayerState);
   settings = $state<DisplaySettings>(null as unknown as DisplaySettings);
+  /** Current grade (replaced on every change; edit through `player.setGrade/updateGradeNode`). */
+  grade = $state<Grade>(null as unknown as Grade);
   probe = $state<ProbeResult | null>(null);
   probePinned = $state<ProbeResult[]>([]);
   /** UI-only state shared between components. */
@@ -35,9 +38,11 @@ export class PlayerController {
   constructor(opts: PlayerOptions = {}, existing?: Player) {
     this.player = existing ?? new Player(opts);
     this.settings = structuredClone(this.player.settings);
-    this.unsub = this.player.subscribe((s) => {
+    this.grade = this.player.getGrade();
+    this.unsub = this.player.subscribe((s, changed) => {
       this.state = s;
       this.settings = structuredClone(this.player.settings);
+      if (changed.has('gradeRevision')) this.grade = this.player.getGrade();
     });
     this.player.ready().catch((e) => (this.ui.webgpuError = String(e?.message ?? e)));
   }

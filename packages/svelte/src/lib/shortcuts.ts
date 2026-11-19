@@ -32,6 +32,7 @@ export const SHORTCUTS: Shortcut[] = [
   { keys: 'Shift+P', label: 'Focus peaking', group: 'Analysis' },
   { keys: 'Shift+G', label: 'Safe areas & centre', group: 'Analysis' },
   { keys: 'W', label: 'Compare mode: wipe / side by side / difference / blend', group: 'Analysis' },
+  { keys: '⌘Z / ⇧⌘Z', label: 'Undo / redo grade', group: 'Panels' },
   { keys: 'S', label: 'Scopes panel', group: 'Panels' },
   { keys: '?', label: 'This help', group: 'Panels' },
 ];
@@ -51,8 +52,12 @@ export function handleKey(
       t.isContentEditable)
   )
     return false;
-  if (e.metaKey || e.ctrlKey) return false;
   const p = ctl.player;
+  if ((e.metaKey || e.ctrlKey) && (e.key === 'z' || e.key === 'Z' || e.key === 'y')) {
+    const redo = e.key === 'y' || e.shiftKey;
+    return redo ? p.redo() : p.undo();
+  }
+  if (e.metaKey || e.ctrlKey) return false;
   const s = ctl.settings;
   const k = e.key;
   const channel = (c: 'r' | 'g' | 'b' | 'a' | 'luma') =>

@@ -4,6 +4,8 @@ export {
   type PlayerOptions,
   type ProbeResult,
   type LoopMode,
+  type SetGradeOptions,
+  type GradeNodePatch,
 } from './player/player.js';
 export { FrameCache } from './player/cache.js';
 export { framesToTimecode, timecodeToFrames, isDropFrame } from './player/timecode.js';
@@ -50,3 +52,5 @@ export { configureExrPool } from './media/exr-source.js';
 export { ensureProres } from './media/video-source.js';
 export type * from './media/types.js';
 export * as color from './color/index.js';
+export * as grade from './grade/index.js';
+export type { Grade, GradeNode } from './grade/model.js';

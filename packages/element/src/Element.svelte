@@ -26,7 +26,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { ScenePlayer, type PlayerController } from '@scenelinear/svelte';
-  import type { MediaInput, DisplaySettings, LoopMode } from '@scenelinear/core';
+  import type { MediaInput, DisplaySettings, LoopMode, SetGradeOptions } from '@scenelinear/core';
 
   let {
     src = '',
@@ -157,6 +157,7 @@
       }
       if (changed.has('playing')) emit(s.playing ? 'play' : 'pause', null);
       if (changed.has('error') && s.error) emit('error', { message: s.error });
+      if (changed.has('gradeRevision')) emit('gradechange', { grade: c.player.getGrade() });
     });
     emit('ready', null);
   }
@@ -182,6 +183,20 @@
   }
   export function compare(media: MediaInput | null) {
     return ctl?.player.loadCompare(media);
+  }
+  /** Current grade as JSON (see docs/grading.md). */
+  export function getGrade() {
+    return ctl?.player.getGrade();
+  }
+  /** Replaces the grade; any JSON is validated and completed with defaults. */
+  export function setGrade(grade: unknown, opts?: SetGradeOptions) {
+    ctl?.player.setGrade(grade, opts);
+  }
+  export function undo() {
+    return ctl?.player.undo() ?? false;
+  }
+  export function redo() {
+    return ctl?.player.redo() ?? false;
   }
   export function getPlayer() {
     return ctl?.player;

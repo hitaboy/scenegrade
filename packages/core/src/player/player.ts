@@ -16,6 +16,17 @@ import { openMedia, type MediaInput, type OpenOptions } from '../media/open.js';
 import { FrameCache } from './cache.js';
 import { AudioPlayer } from './audio.js';
 import * as color from '../color/index.js';
+import {
+  GradeHistory,
+  applyGradeCPU,
+  cloneGrade,
+  defaultGrade,
+  normalizeGrade,
+  packGrade,
+  type Grade,
+  type GradeNode,
+  type PackedGrade,
+} from '../grade/index.js';
 
 export type LoopMode = 'loop' | 'once' | 'pingpong';
 
@@ -51,13 +62,32 @@ export interface PlayerState {
   };
   cacheVersion: number;
   hdrDisplay: boolean;
+  /** Incremented on every grade change; read the grade with `getGrade()`. */
+  gradeRevision: number;
+  canUndo: boolean;
+  canRedo: boolean;
 }
+
+export interface SetGradeOptions {
+  /**
+   * Undo behaviour: true (default) records a step, false doesn't, and a string records a step
+   * that merges with the previous one carrying the same key (continuous drags).
+   */
+  history?: boolean | string;
+}
+
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends unknown[] ? T[K] : T[K] extends object ? DeepPartial<T[K]> : T[K];
+};
+export type GradeNodePatch = DeepPartial<Omit<GradeNode, 'id'>>;
 
 export interface ProbeResult {
   x: number;
   y: number;
   /** Scene-linear ACEScg (after the input transform, before exposure). */
   scene: [number, number, number];
+  /** After viewer exposure, the grade and the CDL (what enters the view transform). */
+  graded: [number, number, number];
   alpha: number;
   /** Source value as stored in the file (before the input transform), when available. */
   source?: number[];
@@ -65,7 +95,7 @@ export interface ProbeResult {
   display: [number, number, number];
   /** Display luminance in nits (when the view is known). */
   nits?: number;
-  /** Scene stops relative to 18% grey. */
+  /** Graded stops relative to 18% grey. */
   stops: number;
 }
 
@@ -151,10 +181,14 @@ export class Player {
       stats: { fps: 0, decodeMs: 0, dropped: 0, cachedFrames: 0, cacheBytes: 0, gpuMs: 0 },
       cacheVersion: 0,
       hdrDisplay: detectHdrDisplay(),
+      gradeRevision: 0,
+      canUndo: false,
+      canRedo: false,
     };
     this.rendererReady = Renderer.create().then(async (r) => {
       this.renderer = r;
       this.scopes = new ScopeEngine(r);
+      r.setGrade(this.packed);
       await this.applyView();
       this.dirty = true;
       this.kick();
@@ -889,6 +923,102 @@ export class Player {
   }
 
   // -------------------------------------------------------------------------------------------
+  // Grade
+  // -------------------------------------------------------------------------------------------
+
+  private grade: Grade = defaultGrade();
+  private packed: PackedGrade = packGrade(this.grade);
+  private readonly history = new GradeHistory();
+
+  /** A copy of the current grade (serialisable JSON). */
+  getGrade(): Grade {
+    return cloneGrade(this.grade);
+  }
+
+  /** Replaces the grade. Accepts any JSON; it is validated and completed with defaults. */
+  setGrade(input: Grade | unknown, opts: SetGradeOptions = {}): void {
+    const next = normalizeGrade(input);
+    const h = opts.history ?? true;
+    if (h !== false) this.history.record(this.grade, typeof h === 'string' ? h : undefined);
+    this.applyGrade(next);
+  }
+
+  /** Deep-merges a patch into one node (by id, or the first node when omitted). */
+  updateGradeNode(id: string | null, patch: GradeNodePatch, opts: SetGradeOptions = {}): void {
+    const g = this.getGrade();
+    const n = id == null ? g.nodes[0] : g.nodes.find((x) => x.id === id);
+    if (!n) throw new Error(`No grade node "${id}"`);
+    deepMerge(
+      n as unknown as Record<string, unknown>,
+      clonePlain(patch) as Record<string, unknown>,
+    );
+    this.setGrade(g, opts);
+  }
+
+  /** Ends a coalesced edit (call on pointer up) so the next change is its own undo step. */
+  commitGradeEdit(): void {
+    this.history.break();
+  }
+
+  undo(): boolean {
+    const g = this.history.undo(this.grade);
+    if (g) this.applyGrade(g);
+    return !!g;
+  }
+
+  redo(): boolean {
+    const g = this.history.redo(this.grade);
+    if (g) this.applyGrade(g);
+    return !!g;
+  }
+
+  /** Clears the undo history (e.g. after loading a project). */
+  clearGradeHistory(): void {
+    this.history.clear();
+    this.set({ canUndo: false, canRedo: false });
+  }
+
+  /** Graded scene value (ACEScg) of a scene value, as the GPU computes it before the view. */
+  gradeCPU(acescg: [number, number, number]): [number, number, number] {
+    return this.sceneGradeCPU(acescg);
+  }
+
+  private applyGrade(g: Grade): void {
+    this.grade = g;
+    this.packed = packGrade(g);
+    this.renderer?.setGrade(this.packed);
+    this.invalidate();
+    this.set({
+      gradeRevision: this.state.gradeRevision + 1,
+      canUndo: this.history.canUndo,
+      canRedo: this.history.canRedo,
+    });
+  }
+
+  /** CPU mirror of the shader's gradeScene(): viewer exposure/saturation, grade, CDL. */
+  private sceneGradeCPU(scene: [number, number, number]): [number, number, number] {
+    const s = this.settings;
+    let c = scene.map((v) => v * Math.pow(2, s.exposure)) as [number, number, number];
+    if (s.saturation !== 1) {
+      const y = 0.2722287168 * c[0] + 0.6740817658 * c[1] + 0.0536895174 * c[2];
+      c = c.map((v) => y + (v - y) * s.saturation) as [number, number, number];
+    }
+    c = applyGradeCPU(this.packed, c);
+    if (s.cdl.enabled) {
+      const cct = color.acescgToACEScct(c);
+      c = color.acescctToACEScg(
+        color.applyCDL(cct, {
+          slope: s.cdl.slope,
+          offset: s.cdl.offset,
+          power: s.cdl.power,
+          sat: s.cdl.saturation,
+        }),
+      ) as [number, number, number];
+    }
+    return c;
+  }
+
+  // -------------------------------------------------------------------------------------------
   // Pixel probe
   // -------------------------------------------------------------------------------------------
 
@@ -901,11 +1031,7 @@ export class Player {
     const px = await r.readPixel(a, p.x, p.y, radius);
     if (!px) return null;
     const scene: [number, number, number] = [px[0], px[1], px[2]];
-    const exposed = scene.map((v) => v * Math.pow(2, this.settings.exposure)) as [
-      number,
-      number,
-      number,
-    ];
+    const exposed = this.sceneGradeCPU(scene);
     let display: [number, number, number];
     const v = this.settings.view;
     if (v === 'raw' || v === 'log-acescct' || v === 'srgb-clamp')
@@ -937,6 +1063,7 @@ export class Player {
       x: Math.floor(p.x),
       y: Math.floor(p.y),
       scene,
+      graded: exposed,
       alpha: px[3],
       source,
       display,
@@ -984,4 +1111,20 @@ function clonePlain<T>(v: T): T {
     return o as T;
   }
   return v;
+}
+
+function deepMerge(dst: Record<string, unknown>, src: Record<string, unknown>): void {
+  for (const [k, v] of Object.entries(src)) {
+    const cur = dst[k];
+    if (
+      v &&
+      typeof v === 'object' &&
+      !Array.isArray(v) &&
+      cur &&
+      typeof cur === 'object' &&
+      !Array.isArray(cur)
+    ) {
+      deepMerge(cur as Record<string, unknown>, v as Record<string, unknown>);
+    } else if (v !== undefined) dst[k] = v;
+  }
 }

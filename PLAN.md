@@ -233,7 +233,7 @@ Estimaciones para 1 desarrollador a tiempo completo; orientativas.
 | **8. Web Component + API pública**     | `<aces-player>`, atributos/props/eventos, build CDN (ESM) + npm, wrapper React fino.                                                                                                                                                                                                                                                                  | Integración en 1 línea.                                          | 1–2     |
 | **9. Comparación A/B y extras**        | Wipe, lado a lado, diferencia; muestras de probe fijadas.                                                                                                                                                                                                                                                                                             | —                                                                | 1–2     |
 | **10. Calidad y lanzamiento**          | Matriz de navegadores, tests de regresión visual, benchmarks automáticos, docs (Storybook/VitePress), demos, licencias (OpenEXR/OCIO BSD-3, ACES).                                                                                                                                                                                                    | v1.0                                                             | 2       |
-| **12–17. Grading (v2)**                | Motor de grade (nodos → WGSL), primarias/curvas/HSL, cualificador y ventanas, exportar el look (CDL/CLF/.cube/AMF), render en el cliente (WebCodecs, EXR). Ver sección 8.                                                                                                                                                                             | Herramienta de grading en el navegador.                          | ~12 + 4 |
+| **12–17. Grading (v2)**                | Motor de grade (intérprete WGSL), primarias/curvas/HSL, cualificador y ventanas, exportar el look (CDL/CLF/.cube/AMF), render en el cliente (WebCodecs, EXR). Ver sección 8.                                                                                                                                                                          | Herramienta de grading en el navegador.                          | ~12 + 4 |
 | **11. Opcional**                       | Decoder ProRes en WebGPU compute, ProRes RAW, ocio-wasm (configs custom), fallback WebGL2, anotaciones, OTIO, sesiones sincronizadas.                                                                                                                                                                                                                 | —                                                                | —       |
 
 **Total v1 ≈ 26–29 semanas.** Un **MVP útil** (visor EXR + ACES + scopes + web component)
@@ -357,9 +357,11 @@ CDL, LUT .cube), y los scopes evalúan la misma cadena WGSL que el visor.
 - **Grafo de nodos en serie** (v2.0), con paralelo y capa más adelante. Cada nodo tiene:
   - operaciones primarias, curvas, cualificador, ventanas y su máscara combinada;
   - mezcla (opacidad) y bypass.
-- **Compilación a WGSL:** el grafo se traduce a un shader. Se regenera solo al cambiar la
-  _estructura_; los valores van en un uniform/storage buffer. Las curvas y las curvas HSL se
-  hornean como LUT 1D de 1024 muestras en textura.
+- **Intérprete en GPU** (decidido en la fase 12, en lugar de compilar el grafo a WGSL): una
+  única función WGSL recorre los nodos empaquetados y ramifica por flags uniformes. Editar el
+  grade, incluso añadir o quitar nodos, nunca recompila un pipeline. Los valores van en un
+  storage buffer; las curvas se hornean como tabla `r32float` de 1024 muestras por curva.
+  Coste medido: 3 nodos completos, 2,4 ms en 3 Mpx. Detalle en `docs/grading.md`.
 - **Datos:** el grade es JSON serializable y versionado: `Grade { version, nodes[], ... }`.
   Puede ser por clip, por plano (rango de frames) o con keyframes por parámetro.
   - Es determinista: la misma entrada da los mismos píxeles en GPU y en la referencia CPU
@@ -436,14 +438,14 @@ El audio se copia sin recodificar.
 
 ### 8.7 Fases
 
-| Fase                                  | Contenido                                                                                            | Semanas |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------- |
-| **12. Motor de grade**                | Modelo de datos, compilador grafo → WGSL, referencia CPU y tests, undo/redo, API `getGrade/setGrade` | 3       |
-| **13. Primarias + curvas + UI Grade** | Ruedas, log wheels, contraste/pivote, temperatura/tinte, curvas Y/RGB y HSL, layout Grade, stills    | 4       |
-| **14. Exportar e importar el look**   | CDL/CC/CCC, CLF, .cube con error medido, AMF, proyecto .json                                         | 2       |
-| **15. Render en el cliente**          | VideoEncoder (H.264/HEVC/AV1) + mux + audio, writer EXR, File System Access, cola de render          | 3       |
-| **16. Secundarias**                   | Cualificador HSL, ventanas con softness, vista de máscara, nodos con mezcla, keyframes               | 4       |
-| **17. Extras**                        | ProRes encoder WASM, tracking, control surfaces (WebHID/MIDI), match de planos, sesiones en vivo     | —       |
+| Fase                                  | Contenido                                                                                         | Semanas |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------- | ------- |
+| **12. Motor de grade** ✅             | Modelo de datos, intérprete WGSL, referencia CPU y tests, undo/redo, API `getGrade/setGrade`      | 3       |
+| **13. Primarias + curvas + UI Grade** | Ruedas, log wheels, contraste/pivote, temperatura/tinte, curvas Y/RGB y HSL, layout Grade, stills | 4       |
+| **14. Exportar e importar el look**   | CDL/CC/CCC, CLF, .cube con error medido, AMF, proyecto .json                                      | 2       |
+| **15. Render en el cliente**          | VideoEncoder (H.264/HEVC/AV1) + mux + audio, writer EXR, File System Access, cola de render       | 3       |
+| **16. Secundarias**                   | Cualificador HSL, ventanas con softness, vista de máscara, nodos con mezcla, keyframes            | 4       |
+| **17. Extras**                        | ProRes encoder WASM, tracking, control surfaces (WebHID/MIDI), match de planos, sesiones en vivo  | —       |
 
 **Grading útil (12–15) ≈ 12 semanas.**
 

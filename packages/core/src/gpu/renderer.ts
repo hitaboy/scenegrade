@@ -4,6 +4,8 @@ import { decodeShader, displayShader, type DecodeKind, type ColorWgsl } from './
 import type { DisplaySettings, ViewTransform } from './settings.js';
 import { PRIMARIES, rgbToRgb, type M3 } from './matrices.js';
 import * as color from '../color/index.js';
+import { CURVE_N } from '../grade/curves.js';
+import { CURVE_ROWS, EMPTY_PACKED, type PackedGrade } from '../grade/pack.js';
 
 /** A decoded frame living on the GPU as scene-linear ACEScg (rgba16float). */
 export interface SceneImage {
@@ -133,8 +135,62 @@ export class Renderer {
           visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE,
           sampler: { type: 'filtering' },
         },
+        {
+          binding: 7,
+          visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE,
+          buffer: { type: 'read-only-storage' },
+        },
+        {
+          binding: 8,
+          visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE,
+          texture: { sampleType: 'unfilterable-float' },
+        },
       ],
     });
+    this.setGrade(EMPTY_PACKED);
+  }
+
+  // -------------------------------------------------------------------------------------------
+  // Grade (packed params + curve table, read by sl_grade in the display and scope shaders)
+  // -------------------------------------------------------------------------------------------
+
+  private gradeBuf!: GPUBuffer;
+  private gradeTex!: GPUTexture;
+  /** Bumped whenever the grade buffer or texture objects are replaced (bind groups must rebuild). */
+  gradeVersion = 0;
+
+  setGrade(p: PackedGrade): void {
+    const d = this.device;
+    const bytes = Math.max(16, p.params.byteLength);
+    if (!this.gradeBuf || this.gradeBuf.size < bytes) {
+      this.gradeBuf?.destroy();
+      this.gradeBuf = d.createBuffer({
+        label: 'grade-params',
+        size: Math.max(bytes, 4096),
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+      });
+      this.gradeVersion++;
+    }
+    d.queue.writeBuffer(this.gradeBuf, 0, p.params as Float32Array<ArrayBuffer>);
+    const rows = Math.max(1, p.rows);
+    if (!this.gradeTex || this.gradeTex.height < rows) {
+      this.gradeTex?.destroy();
+      this.gradeTex = d.createTexture({
+        label: 'grade-curves',
+        size: [CURVE_N, Math.max(rows, CURVE_ROWS)],
+        format: 'r32float',
+        usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST,
+      });
+      this.gradeVersion++;
+    }
+    if (p.curves.length) {
+      d.queue.writeTexture(
+        { texture: this.gradeTex },
+        p.curves as Float32Array<ArrayBuffer>,
+        { bytesPerRow: CURVE_N * 4, rowsPerImage: rows },
+        [CURVE_N, rows],
+      );
+    }
   }
 
   get displayBindGroupLayout(): GPUBindGroupLayout {
@@ -512,6 +568,8 @@ export class Renderer {
         { binding: 4, resource: (this.userLut?.texture ?? this.dummy3d).createView() },
         { binding: 5, resource: this.linearSampler },
         { binding: 6, resource: this.nearestSampler },
+        { binding: 7, resource: { buffer: this.gradeBuf } },
+        { binding: 8, resource: this.gradeTex.createView() },
       ],
     });
   }
@@ -710,7 +768,7 @@ export class Surface {
     });
     r.device.queue.writeBuffer(this.uniforms, 0, data);
 
-    const key = `${a?.texture.label}:${a?.key}:${b?.key}:${lut?.id}:${r.hasUserLut}`;
+    const key = `${a?.texture.label}:${a?.key}:${b?.key}:${lut?.id}:${r.hasUserLut}:${r.gradeVersion}`;
     if (!this.bindGroup || key !== this.bindKey) {
       this.bindGroup = r.displayBindGroup(this.uniforms, a, b);
       this.bindKey = key;

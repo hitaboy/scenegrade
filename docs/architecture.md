@@ -11,6 +11,7 @@
 @scenelinear/core      Player (state, cache, clock, prefetch, audio)
         ├── media/     FrameSource implementations: ExrSource, VideoSource, BrowserImageSource
         ├── gpu/       Renderer (decode + display passes), Surface (one per canvas), ScopeEngine
+        ├── grade/     grade model, GPU interpreter (WGSL), CPU reference, undo history
         └── color/     input transforms, ACES view LUTs, CDL, .cube, false colour (CPU + WGSL)
         │
 @scenelinear/exr-wasm  OpenEXRCore → WASM, ExrWorkerPool
@@ -41,7 +42,8 @@ does can be done through the `Player` API.
 
 4. **Display pass (GPU, per redraw).** Runs on every canvas:
    - **Viewport:** zoom and pan, data window vs display window, nearest filtering from 200 % up.
-   - **Grade:** exposure, saturation, CDL and an optional `.cube` LUT, both applied in ACEScct.
+   - **Grade:** viewer exposure and saturation, then the node grade (`sl_grade`, see
+     [grading.md](grading.md)), then CDL and an optional `.cube` LUT, both applied in ACEScct.
    - **Channel isolation.**
    - **View transform:** `ACEScg → ACEScct shaper → 3D LUT`, an exact trilinear interpolation with
      `textureLoad`.

@@ -34,7 +34,8 @@
   --sl-inout: rgba(143, 179, 232, 0.18);
 
   /* Type */
-  --sl-font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --sl-font:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --sl-font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
   --sl-text-xs: 10px;
   --sl-text-sm: 11px;
