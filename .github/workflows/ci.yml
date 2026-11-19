@@ -44,7 +44,8 @@ jobs:
       - name: Verify the committed ACES LUTs are reproducible
         run: |
           pnpm bake:luts
-          git diff --exit-code -- packages/core/src/color/luts packages/core/src/color/generated.ts
+          # OCIO's CPU path is not bit-identical across platforms: compare within float noise.
+          pnpm bake:check
 
       - run: pnpm check
       - run: pnpm test

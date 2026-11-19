@@ -14,9 +14,10 @@
     "check": "pnpm -r run check",
     "format": "prettier --write .",
     "e2e": "pnpm --filter @scenegrade/demo e2e",
-    "bake:luts": "uv run --python 3.12 --with opencolorio --with numpy python tools/ocio-bake/bake.py",
+    "bake:luts": "uv run --python 3.12 --with opencolorio --with numpy python tools/ocio-bake/bake.py && prettier --write packages/core/src/color/generated.ts packages/core/src/color/luts/manifest.json",
     "changeset": "changeset",
-    "media": "uv run --python 3.12 --with OpenEXR --with numpy python tools/test-media/make_exr.py && uv run --python 3.12 --with OpenEXR --with numpy python tools/test-media/make_video.py"
+    "media": "uv run --python 3.12 --with OpenEXR --with numpy python tools/test-media/make_exr.py && uv run --python 3.12 --with OpenEXR --with numpy python tools/test-media/make_video.py",
+    "bake:check": "uv run --python 3.12 --with numpy python tools/ocio-bake/check_reproducible.py"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
