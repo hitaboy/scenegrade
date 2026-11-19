@@ -97,3 +97,19 @@ describe('colour matrices', () => {
     expect(m[1]).toBeCloseTo(-0.622, 2);
   });
 });
+
+describe('Player.update', () => {
+  it('keeps settings cloneable when given proxies (Svelte $state)', async () => {
+    const g = globalThis as Record<string, unknown>;
+    g.requestAnimationFrame ??= () => 0;
+    g.cancelAnimationFrame ??= () => undefined;
+    const { Player } = await import('../src/player/player');
+    const p = new Player();
+    const proxy = <T extends object>(o: T): T => new Proxy(o, {});
+    const wipe = proxy({ ...p.settings.compare, mode: 'off' as const });
+    p.update({ compare: wipe, cdl: proxy({ ...p.settings.cdl, slope: proxy([1, 2, 3]) as never }) });
+    expect(() => structuredClone(p.settings)).not.toThrow();
+    expect(p.settings.cdl.slope).toEqual([1, 2, 3]);
+    p.dispose();
+  });
+});

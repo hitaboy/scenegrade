@@ -329,7 +329,10 @@ export class Player {
   update(patch: Partial<DisplaySettings>): void {
     const prevInput = this.settings.inputSpace;
     const prevView = this.settings.view;
-    for (const [k, v] of Object.entries(patch) as [keyof DisplaySettings, unknown][]) {
+    for (const [k, raw] of Object.entries(patch) as [keyof DisplaySettings, unknown][]) {
+      // Deep-copy plain data: callers may pass framework proxies (Svelte $state) or objects
+      // they keep mutating; settings must stay structured-cloneable and owned by the player.
+      const v = clonePlain(raw);
       const cur = this.settings[k];
       if (
         v &&
@@ -971,4 +974,14 @@ export class Player {
     this.hdrQuery?.removeEventListener('change', this.onHdrChange);
     this.listeners.clear();
   }
+}
+
+function clonePlain<T>(v: T): T {
+  if (Array.isArray(v)) return v.map(clonePlain) as T;
+  if (v && typeof v === 'object' && !ArrayBuffer.isView(v)) {
+    const o: Record<string, unknown> = {};
+    for (const k of Object.keys(v)) o[k] = clonePlain((v as Record<string, unknown>)[k]);
+    return o as T;
+  }
+  return v;
 }

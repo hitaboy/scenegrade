@@ -43,7 +43,7 @@ export class PlayerController {
   }
 
   update(patch: Partial<DisplaySettings>): void {
-    this.player.update(patch);
+    this.player.update($state.snapshot(patch) as Partial<DisplaySettings>);
   }
 
   load(input: MediaInput, opts?: OpenOptions) {
