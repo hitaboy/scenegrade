@@ -31,7 +31,7 @@ files ship next to the bundle and are fetched on demand, so serve `dist/` as is.
 | `input-space`       | id                             | e.g. `acescg`, `aces2065-1`, `acescct`, `arri-logc4`, `sony-slog3-sgamut3cine`, `rec709`, `srgb`. The default is auto-detected from metadata                                                                                                |
 | `view`              | id                             | `srgb-aces2-sdr709`, `rec1886-aces2-sdr709`, `displayp3-aces2-sdrp3`, `pq-aces2-hdr1000-p3`, `pq-aces2-hdr1000-rec2020`, `hlg-aces2-hdr1000-p3`, `displayp3hdr-aces2-hdr1000-p3`, `srgb-aces1-sdrvideo`, `raw`, `log-acescct`, `srgb-clamp` |
 | `exposure`          | stops                          |                                                                                                                                                                                                                                             |
-| `layout`            | `full` \| `compact`            | `compact` shows only the transport plus a settings popover                                                                                                                                                                                  |
+| `layout`            | `full` \| `compact` \| `grade` | `compact` shows only the transport plus a settings popover; `grade` opens the grade palette (`E` toggles it in `full`)                                                                                                                      |
 | `panel`             | `true` \| `false`              | Show the scopes/colour/info side panel                                                                                                                                                                                                      |
 | `drop`              | `true` \| `false`              | Allow drag & drop and the open dialog                                                                                                                                                                                                       |
 | `autoplay`, `muted` | boolean                        |                                                                                                                                                                                                                                             |
@@ -54,6 +54,11 @@ el.addEventListener('loaded', (e) => console.log(e.detail));   // MediaInfo
 el.addEventListener('frame', (e) => console.log(e.detail.frameNumber));
 el.addEventListener('play', ...); el.addEventListener('pause', ...);
 el.addEventListener('error', (e) => console.error(e.detail.message));
+
+// Grading (see grading.md): persist the grade in your backend
+el.setGrade(savedJson);
+el.addEventListener('gradechange', (e) => save(e.detail.grade));
+el.undo(); el.redo();
 ```
 
 ### Theming
@@ -85,7 +90,8 @@ See [`packages/svelte/src/lib/tokens.css`](../packages/svelte/src/lib/tokens.css
 ```
 
 You can also build your own layout from the parts: `Viewer`, `Transport`, `Timeline`, `Scope`,
-`ScopesPanel`, `ColorPanel` and `InfoPanel`, all sharing one `PlayerController`.
+`ScopesPanel`, `ColorPanel`, `InfoPanel`, `GradePanel`, `ColorWheel` and `CurveEditor`, all
+sharing one `PlayerController`.
 
 ## 3. Headless (React, Vue, plain JS…)
 

@@ -438,14 +438,14 @@ El audio se copia sin recodificar.
 
 ### 8.7 Fases
 
-| Fase                                  | Contenido                                                                                         | Semanas |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------- | ------- |
-| **12. Motor de grade** ✅             | Modelo de datos, intérprete WGSL, referencia CPU y tests, undo/redo, API `getGrade/setGrade`      | 3       |
-| **13. Primarias + curvas + UI Grade** | Ruedas, log wheels, contraste/pivote, temperatura/tinte, curvas Y/RGB y HSL, layout Grade, stills | 4       |
-| **14. Exportar e importar el look**   | CDL/CC/CCC, CLF, .cube con error medido, AMF, proyecto .json                                      | 2       |
-| **15. Render en el cliente**          | VideoEncoder (H.264/HEVC/AV1) + mux + audio, writer EXR, File System Access, cola de render       | 3       |
-| **16. Secundarias**                   | Cualificador HSL, ventanas con softness, vista de máscara, nodos con mezcla, keyframes            | 4       |
-| **17. Extras**                        | ProRes encoder WASM, tracking, control surfaces (WebHID/MIDI), match de planos, sesiones en vivo  | —       |
+| Fase                                     | Contenido                                                                                         | Semanas |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------- | ------- |
+| **12. Motor de grade** ✅                | Modelo de datos, intérprete WGSL, referencia CPU y tests, undo/redo, API `getGrade/setGrade`      | 3       |
+| **13. Primarias + curvas + UI Grade** ✅ | Ruedas, log wheels, contraste/pivote, temperatura/tinte, curvas Y/RGB y HSL, layout Grade, stills | 4       |
+| **14. Exportar e importar el look**      | CDL/CC/CCC, CLF, .cube con error medido, AMF, proyecto .json                                      | 2       |
+| **15. Render en el cliente**             | VideoEncoder (H.264/HEVC/AV1) + mux + audio, writer EXR, File System Access, cola de render       | 3       |
+| **16. Secundarias**                      | Cualificador HSL, ventanas con softness, vista de máscara, nodos con mezcla, keyframes            | 4       |
+| **17. Extras**                           | ProRes encoder WASM, tracking, control surfaces (WebHID/MIDI), match de planos, sesiones en vivo  | —       |
 
 **Grading útil (12–15) ≈ 12 semanas.**
 

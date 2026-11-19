@@ -82,3 +82,29 @@ hides its stats.
 Scopes use black backgrounds and low-contrast graticules: 10 % steps on the waveform, 75/100 %
 colour targets and the skin-tone line on the vectorscope, and stops or quartiles on the
 histogram.
+
+## Grade palette (`layout="grade"` or `E`)
+
+```
+├──────────────────────────────────────────────────────────────────────────────────────┤ transport
+│ ● 1 Node 1 •  ● 2 Node 2  [+]   ◀ ▶ ↺ 🗑  MIX ──●── 1.00        ○ Bypass ↶ ↷ ⤓ 📂 ✕ │ node strip
+├────────────┬─────────────────────────────────────────────────────────────┬───────────┤
+│ Primaries  │   LIFT      GAMMA      GAIN      OFFSET     EXPOSURE ──●──   │ STILLS  📷│
+│ Log        │   (◎)       (◎)        (◎)       (◎)        TEMP     ──●──   │ ┌───────┐ │
+│ Curves     │   ▥▥▥▥      ▥▥▥▥       ▥▥▥▥      ▥▥▥▥       TINT · CONTRAST  │ │ still │ │
+│ HSL        │   r g b     r g b      r g b     r g b      PIVOT · SAT · HUE│ └───────┘ │
+│ Mixer · CDL│                                                             │           │
+└────────────┴─────────────────────────────────────────────────────────────┴───────────┘
+```
+
+- **Wheels:** the puck plane is oriented like the vectorscope (x = B − Y, y = R − Y, with AP1 luma),
+  so moving the puck changes colour without changing luma.
+  - Dragging is relative; Shift gives fine control.
+  - The thumbwheel under each wheel sets the master.
+  - Double-click resets; arrow keys nudge.
+- **Curves:** the editor works in the ACEScct domain.
+  - The HSL curves are deltas around a neutral line, with a hue or luma strip for orientation.
+  - The first click on an empty HSL curve adds two neutral anchors, so the edit stays local.
+- **Undo:** each gesture is one undo step (the edit is committed on pointer up).
+- **Stills:** a still stores a thumbnail and its grade; clicking it applies the grade.
+- **Grade files:** the grade saves and loads as `.grade.json`.

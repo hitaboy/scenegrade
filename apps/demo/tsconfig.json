@@ -3,16 +3,7 @@
   "compilerOptions": {
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "types": [
-      "@webgpu/types",
-      "node",
-      "svelte",
-      "vite/client"
-    ]
+    "types": ["@webgpu/types", "node", "svelte", "vite/client"]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.svelte",
-    "../../packages/exr-wasm/src/openexr-glue.d.ts"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.svelte", "../../packages/exr-wasm/src/openexr-glue.d.ts"]
 }

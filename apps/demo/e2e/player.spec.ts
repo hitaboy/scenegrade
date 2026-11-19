@@ -206,3 +206,56 @@ test('grade: on-screen pixel matches the CPU reference; undo restores the image'
   expect(res.canUndo).toBe(false);
   expect(errors.filter((e) => /WGSL|GPUValidation|Invalid/i.test(e))).toEqual([]);
 });
+
+test('grade panel: wheel, curve and node edits are undoable steps', async ({ page }) => {
+  await setup(page);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await load(page, `${base}exr/chart_zip.exr`);
+  await page.locator('.sl-player').focus();
+  await page.keyboard.press('e');
+  const gain = page.getByRole('slider', { name: 'Gain colour balance' });
+  await expect(gain).toBeVisible();
+  const box = (await gain.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  for (let i = 1; i <= 5; i++)
+    await page.mouse.move(box.x + box.width / 2 - i * 5, box.y + box.height / 2 - i * 5);
+  await page.mouse.up();
+  await page.getByRole('slider', { name: 'Gain colour balance' }).press('ArrowRight');
+  await page.getByRole('tab', { name: 'Curves' }).click();
+  const curve = page.getByRole('application', { name: /Y curve/ });
+  const cb = (await curve.boundingBox())!;
+  await page.mouse.move(cb.x + cb.width * 0.5, cb.y + cb.height * 0.5);
+  await page.mouse.down();
+  await page.mouse.move(cb.x + cb.width * 0.5, cb.y + cb.height * 0.4);
+  await page.mouse.up();
+  await page.getByRole('button', { name: 'Add node after the selected one' }).click();
+  const r = await page.evaluate(() => {
+    const p = (globalThis as any).scenelinear.player;
+    const g = p.getGrade();
+    const out = {
+      nodes: g.nodes.length,
+      gain: g.nodes[0].primaries.gain,
+      y: g.nodes[0].curves.y.length,
+      undos: 0,
+    };
+    while (p.state.canUndo && out.undos < 20) {
+      p.undo();
+      out.undos++;
+    }
+    return {
+      ...out,
+      identity: (globalThis as any).scenelinearCore.grade.isIdentityGrade(p.getGrade()),
+      after: p.getGrade().nodes.length,
+    };
+  });
+  expect(r.nodes).toBe(2);
+  expect(r.gain[0]).toBeGreaterThan(1);
+  expect(r.y).toBe(3);
+  // drag + arrow key on the wheel, curve add+drag, add node
+  expect(r.undos).toBe(4);
+  expect(r.identity).toBe(true);
+  expect(r.after).toBe(1);
+  expect(errors).toEqual([]);
+});

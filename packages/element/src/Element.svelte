@@ -205,7 +205,7 @@
 
 <div class="host-root" bind:this={rootEl}>
   <ScenePlayer
-    layout={layout === 'compact' ? 'compact' : 'full'}
+    layout={layout === 'compact' ? 'compact' : layout === 'grade' ? 'grade' : 'full'}
     panel={panel !== 'false'}
     allowDrop={drop !== 'false'}
     {options}

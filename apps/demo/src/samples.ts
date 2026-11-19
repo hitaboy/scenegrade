@@ -6,6 +6,8 @@ export interface Sample {
   group: string;
   input: MediaInput;
   note?: string;
+  /** Input space to select after loading. */
+  inputSpace?: string;
 }
 
 const base = `${import.meta.env.BASE_URL}media/generated/`;
@@ -39,7 +41,7 @@ export const SAMPLES: Sample[] = [
     group: 'ProRes',
     label: 'ProRes 422 HQ · ACEScct',
     input: `${base}video/chart_acescct_prores422hq.mov`,
-    note: 'Set Input to ACEScct',
+    inputSpace: 'acescct',
   },
   {
     id: 'prores-4444',

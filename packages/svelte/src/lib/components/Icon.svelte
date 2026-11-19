@@ -46,6 +46,15 @@
     out: '<path d="M11 3v10M11 8H4M7 5L4 8l3 3"/>',
     hdr: '<rect x="1.5" y="4" width="13" height="8" rx="1.5"/><path d="M4 6v4M6.5 6v4M4 8h2.5M8.5 6v4h1a2 2 0 0 0 0-4zM12 10V6"/>',
     pin: '<path d="M6 2.5h4l-.5 4 2 2v1H4.5v-1l2-2zM8 9.5v4"/>',
+    plus: '<path d="M8 3v10M3 8h10"/>',
+    left: '<path d="M10 3.5L5.5 8l4.5 4.5"/>',
+    right: '<path d="M6 3.5L10.5 8 6 12.5"/>',
+    trash: '<path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/>',
+    undo: '<path d="M5.5 4L2.5 7l3 3M2.5 7h7a3.5 3.5 0 0 1 0 7H7"/>',
+    redo: '<path d="M10.5 4l3 3-3 3M13.5 7h-7a3.5 3.5 0 0 0 0 7H9"/>',
+    download: '<path d="M8 2.5v8M4.5 7L8 10.5 11.5 7M3 13.5h10"/>',
+    wheel:
+      '<circle cx="8" cy="8" r="6"/><circle cx="10" cy="6" r="1.6" fill="currentColor" stroke="none"/>',
     reset: '<path d="M3.5 8a4.5 4.5 0 1 0 1.3-3.2M3.5 2.5v2.3h2.3"/>',
   };
 </script>

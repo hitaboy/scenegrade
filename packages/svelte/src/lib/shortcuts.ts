@@ -33,6 +33,7 @@ export const SHORTCUTS: Shortcut[] = [
   { keys: 'Shift+G', label: 'Safe areas & centre', group: 'Analysis' },
   { keys: 'W', label: 'Compare mode: wipe / side by side / difference / blend', group: 'Analysis' },
   { keys: '⌘Z / ⇧⌘Z', label: 'Undo / redo grade', group: 'Panels' },
+  { keys: 'E', label: 'Grade panel', group: 'Panels' },
   { keys: 'S', label: 'Scopes panel', group: 'Panels' },
   { keys: '?', label: 'This help', group: 'Panels' },
 ];
@@ -204,6 +205,10 @@ export function handleKey(
       p.fit();
       break;
     }
+    case 'e':
+    case 'E':
+      ctl.ui.gradeOpen = !ctl.ui.gradeOpen;
+      break;
     case 's':
     case 'S':
       if (ctl.ui.panelOpen && ctl.ui.panelTab === 'scopes') ctl.ui.panelOpen = false;

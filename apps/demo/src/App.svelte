@@ -12,7 +12,10 @@
     const s = SAMPLES.find((x) => x.id === id);
     if (!s || !ctl) return;
     current = id;
-    ctl.load(s.input).catch(() => undefined);
+    ctl
+      .load(s.input)
+      .then(() => s.inputSpace && ctl!.update({ inputSpace: s.inputSpace }))
+      .catch(() => undefined);
     if (location.hash.slice(1) !== id) history.replaceState(null, '', `#${id}`);
   }
   const hash = location.hash.slice(1);

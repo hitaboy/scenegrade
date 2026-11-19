@@ -18,7 +18,13 @@ export default defineConfig({
       args:
         process.platform === 'darwin'
           ? ['--enable-unsafe-webgpu', '--use-angle=metal', '--ignore-gpu-blocklist']
-          : ['--enable-unsafe-webgpu', '--enable-features=Vulkan', '--use-vulkan=swiftshader', '--use-webgpu-adapter=swiftshader', '--ignore-gpu-blocklist'],
+          : [
+              '--enable-unsafe-webgpu',
+              '--enable-features=Vulkan',
+              '--use-vulkan=swiftshader',
+              '--use-webgpu-adapter=swiftshader',
+              '--ignore-gpu-blocklist',
+            ],
     },
   },
   webServer: {

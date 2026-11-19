@@ -14,6 +14,14 @@
 
 <nav class="rail" aria-label="Viewer tools">
   <Btn
+    icon="wheel"
+    label="Grade panel"
+    shortcut="E"
+    active={ctl.ui.gradeOpen}
+    onclick={() => (ctl.ui.gradeOpen = !ctl.ui.gradeOpen)}
+  />
+  <div class="sep"></div>
+  <Btn
     icon="probe"
     label="Pixel probe"
     shortcut="P"

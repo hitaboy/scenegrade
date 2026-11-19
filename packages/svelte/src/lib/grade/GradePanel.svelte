@@ -1,0 +1,1024 @@
+<script lang="ts">
+  import { grade as G, type Grade } from '@scenelinear/core';
+  import type { PlayerController } from '../controller.svelte.js';
+  import Slider from '../components/Slider.svelte';
+  import Toggle from '../components/Toggle.svelte';
+  import IconButton from '../components/IconButton.svelte';
+  import ColorWheel from './ColorWheel.svelte';
+  import CurveEditor from './CurveEditor.svelte';
+  import type { RGB } from './wheel.js';
+
+  let { ctl }: { ctl: PlayerController } = $props();
+
+  const n = $derived(ctl.node);
+  const g = $derived(ctl.grade);
+  const commit = () => ctl.commitEdit();
+  const LR = 0.2722287168;
+  const LG = 0.6740817658;
+  const LB = 0.0536895174;
+  const luma = (c: readonly number[]) => LR * c[0] + LG * c[1] + LB * c[2];
+
+  // ---- grade-level edits -------------------------------------------------------------------
+  function setGrade(next: Grade) {
+    ctl.player.setGrade(next);
+  }
+  function addNode() {
+    const next = ctl.player.getGrade();
+    const node = G.defaultNode(`Node ${next.nodes.length + 1}`);
+    const at = next.nodes.findIndex((x) => x.id === n?.id);
+    next.nodes.splice(at < 0 ? next.nodes.length : at + 1, 0, node);
+    setGrade(next);
+    ctl.ui.gradeNode = node.id;
+  }
+  function removeNode() {
+    if (!n) return;
+    const next = ctl.player.getGrade();
+    const i = next.nodes.findIndex((x) => x.id === n.id);
+    next.nodes.splice(i, 1);
+    if (!next.nodes.length) next.nodes.push(G.defaultNode('Node 1'));
+    setGrade(next);
+    ctl.ui.gradeNode = next.nodes[Math.max(0, i - 1)].id;
+  }
+  function moveNode(d: -1 | 1) {
+    if (!n) return;
+    const next = ctl.player.getGrade();
+    const i = next.nodes.findIndex((x) => x.id === n.id);
+    const j = i + d;
+    if (j < 0 || j >= next.nodes.length) return;
+    [next.nodes[i], next.nodes[j]] = [next.nodes[j], next.nodes[i]];
+    setGrade(next);
+  }
+  function resetNode() {
+    if (!n) return;
+    const next = ctl.player.getGrade();
+    const i = next.nodes.findIndex((x) => x.id === n.id);
+    next.nodes[i] = { ...G.defaultNode(n.label), id: n.id };
+    setGrade(next);
+  }
+  let renaming = $state('');
+  function rename(id: string, name: string) {
+    renaming = '';
+    const next = ctl.player.getGrade();
+    const node = next.nodes.find((x) => x.id === id);
+    if (!node || !name.trim() || node.label === name.trim()) return;
+    node.label = name.trim();
+    setGrade(next);
+  }
+
+  // ---- file I/O ---------------------------------------------------------------------------
+  let fileInput: HTMLInputElement;
+  function save() {
+    const blob = new Blob([JSON.stringify(ctl.player.getGrade(), null, 2)], {
+      type: 'application/json',
+    });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${(ctl.state.media?.name ?? 'grade').replace(/\.[^.]+$/, '')}.grade.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  let ioError = $state('');
+  async function load(e: Event) {
+    const f = (e.currentTarget as HTMLInputElement).files?.[0];
+    (e.currentTarget as HTMLInputElement).value = '';
+    if (!f) return;
+    try {
+      ctl.player.setGrade(JSON.parse(await f.text()));
+      ctl.ui.gradeNode = '';
+      ioError = '';
+    } catch (err) {
+      ioError = (err as Error).message;
+    }
+  }
+
+  // ---- wheels -----------------------------------------------------------------------------
+  type W4 = 'lift' | 'gamma' | 'gain' | 'offset';
+  const wheels: { k: W4; label: string; range: number; mMin: number; mMax: number }[] = [
+    { k: 'lift', label: 'Lift', range: 0.1, mMin: -0.5, mMax: 0.5 },
+    { k: 'gamma', label: 'Gamma', range: 0.5, mMin: -2, mMax: 2 },
+    { k: 'gain', label: 'Gain', range: 0.25, mMin: 0, mMax: 4 },
+    { k: 'offset', label: 'Offset', range: 0.1, mMin: -0.5, mMax: 0.5 },
+  ];
+  const mul = (k: W4) => k === 'gain';
+  function wheelRgb(k: W4): RGB {
+    const v = n!.primaries[k];
+    return mul(k) ? [v[0] - 1, v[1] - 1, v[2] - 1] : [v[0], v[1], v[2]];
+  }
+  function wheelReadout(k: W4): RGB {
+    const v = n!.primaries[k];
+    return [0, 1, 2].map((i) => (mul(k) ? v[i] * v[3] : v[i] + v[3])) as RGB;
+  }
+  function setWheel(k: W4, c: RGB) {
+    const v = n!.primaries[k];
+    const rgb = mul(k) ? c.map((x) => 1 + x) : c;
+    ctl.editNode({ primaries: { [k]: [rgb[0], rgb[1], rgb[2], v[3]] } }, `wheel:${k}`);
+  }
+  function setMaster(k: W4, m: number) {
+    const v = n!.primaries[k];
+    ctl.editNode({ primaries: { [k]: [v[0], v[1], v[2], m] } }, `master:${k}`);
+  }
+
+  type W3 = 'shadows' | 'midtones' | 'highlights';
+  const logWheels: { k: W3; label: string }[] = [
+    { k: 'shadows', label: 'Shadows' },
+    { k: 'midtones', label: 'Midtones' },
+    { k: 'highlights', label: 'Highlights' },
+  ];
+  function logRgb(k: W3): RGB {
+    const v = n!.logWheels[k];
+    const y = luma(v);
+    return [v[0] - y, v[1] - y, v[2] - y];
+  }
+  function setLog(k: W3, c: RGB, m = luma(n!.logWheels[k])) {
+    ctl.editNode({ logWheels: { [k]: [c[0] + m, c[1] + m, c[2] + m] } }, `log:${k}`);
+  }
+
+  // ---- curves -----------------------------------------------------------------------------
+  let curveCh = $state<'y' | 'r' | 'g' | 'b'>('y');
+  const chColor = { y: 'var(--sl-text)', r: '#d07a7a', g: '#7ac08a', b: '#7a9ad8' } as const;
+  type H = 'hueHue' | 'hueSat' | 'hueLum' | 'lumSat' | 'satSat';
+  let hsl = $state<H>('hueSat');
+  const hslDefs: Record<
+    H,
+    { label: string; kind: 'periodic' | 'delta'; y: number; bg: 'hue' | 'luma' | 'none' }
+  > = {
+    hueHue: { label: 'Hue vs Hue', kind: 'periodic', y: 0.25, bg: 'hue' },
+    hueSat: { label: 'Hue vs Sat', kind: 'periodic', y: 1, bg: 'hue' },
+    hueLum: { label: 'Hue vs Lum', kind: 'periodic', y: 0.2, bg: 'hue' },
+    lumSat: { label: 'Lum vs Sat', kind: 'delta', y: 1, bg: 'luma' },
+    satSat: { label: 'Sat vs Sat', kind: 'delta', y: 1, bg: 'none' },
+  };
+  const IDENT: [number, number][] = [
+    [0, 0],
+    [1, 1],
+  ];
+
+  // ---- stills -----------------------------------------------------------------------------
+  let grabbing = $state(false);
+  async function grab() {
+    grabbing = true;
+    try {
+      await ctl.grabStill();
+    } finally {
+      grabbing = false;
+    }
+  }
+
+  const tabs = [
+    ['primaries', 'Primaries'],
+    ['log', 'Log'],
+    ['curves', 'Curves'],
+    ['hsl', 'HSL'],
+    ['mixer', 'Mixer · CDL'],
+  ] as const;
+  const f3 = (v: number) => v.toFixed(3);
+</script>
+
+<input bind:this={fileInput} type="file" accept=".json,application/json" hidden onchange={load} />
+
+<section class="gp" aria-label="Grade">
+  <!-- Node strip -->
+  <div class="bar">
+    <div class="nodes" role="listbox" aria-label="Grade nodes">
+      {#each g.nodes as node, i (node.id)}
+        <div
+          class="node"
+          class:on={node.id === n?.id}
+          class:off={!node.enabled}
+          role="option"
+          aria-selected={node.id === n?.id}
+          tabindex="0"
+          title="{node.label} · double-click to rename"
+          onclick={() => (ctl.ui.gradeNode = node.id)}
+          onkeydown={(e) => e.key === 'Enter' && (ctl.ui.gradeNode = node.id)}
+          ondblclick={() => (renaming = node.id)}
+        >
+          <button
+            type="button"
+            class="dot"
+            class:dim={!node.enabled}
+            aria-label={node.enabled ? `Disable ${node.label}` : `Enable ${node.label}`}
+            title={node.enabled ? 'Disable node' : 'Enable node'}
+            onclick={(e) => {
+              e.stopPropagation();
+              ctl.player.updateGradeNode(node.id, { enabled: !node.enabled });
+            }}
+          ></button>
+          <span class="num">{i + 1}</span>
+          {#if renaming === node.id}
+            <!-- svelte-ignore a11y_autofocus -->
+            <input
+              class="rename"
+              value={node.label}
+              autofocus
+              aria-label="Node name"
+              onclick={(e) => e.stopPropagation()}
+              onblur={(e) => rename(node.id, e.currentTarget.value)}
+              onkeydown={(e) => {
+                e.stopPropagation();
+                if (e.key === 'Enter') rename(node.id, e.currentTarget.value);
+                if (e.key === 'Escape') renaming = '';
+              }}
+            />
+          {:else}
+            <span class="name">{node.label}</span>
+          {/if}
+          {#if !G.isIdentityNode(node)}<span class="mod" title="Modified">•</span>{/if}
+        </div>
+      {/each}
+      <IconButton icon="plus" label="Add node after the selected one" size={14} onclick={addNode} />
+    </div>
+    <div class="nodeops">
+      <IconButton icon="left" label="Move node left" size={14} onclick={() => moveNode(-1)} />
+      <IconButton icon="right" label="Move node right" size={14} onclick={() => moveNode(1)} />
+      <IconButton icon="reset" label="Reset node" size={14} onclick={resetNode} />
+      <IconButton
+        icon="trash"
+        label="Delete node"
+        size={14}
+        onclick={removeNode}
+        disabled={g.nodes.length <= 1 && !!n && G.isIdentityNode(n)}
+      />
+      {#if n}
+        <Slider
+          label="Mix"
+          value={n.mix}
+          min={0}
+          max={1}
+          step={0.01}
+          reset={1}
+          width="140px"
+          onchange={(v) => ctl.editNode({ mix: v }, 'mix')}
+        />
+      {/if}
+    </div>
+    <span class="grow"></span>
+    <div class="globalops">
+      <Toggle
+        checked={!g.enabled}
+        label="Bypass"
+        onchange={(v) => setGrade({ ...ctl.player.getGrade(), enabled: !v })}
+      />
+      <IconButton
+        icon="undo"
+        label="Undo"
+        shortcut="⌘Z"
+        size={14}
+        disabled={!ctl.state.canUndo}
+        onclick={() => ctl.player.undo()}
+      />
+      <IconButton
+        icon="redo"
+        label="Redo"
+        shortcut="⇧⌘Z"
+        size={14}
+        disabled={!ctl.state.canRedo}
+        onclick={() => ctl.player.redo()}
+      />
+      <IconButton icon="download" label="Save grade (.json)" size={14} onclick={save} />
+      <IconButton
+        icon="open"
+        label="Load grade (.json)"
+        size={14}
+        onclick={() => fileInput.click()}
+      />
+      <IconButton
+        icon="close"
+        label="Close grade panel"
+        shortcut="E"
+        size={14}
+        onclick={() => (ctl.ui.gradeOpen = false)}
+      />
+    </div>
+  </div>
+  {#if ioError}<div class="err" role="alert">{ioError}</div>{/if}
+
+  <div class="body">
+    <div class="tabs" role="tablist" aria-orientation="vertical">
+      {#each tabs as [id, label] (id)}
+        <button
+          type="button"
+          role="tab"
+          aria-selected={ctl.ui.gradeTab === id}
+          class:on={ctl.ui.gradeTab === id}
+          onclick={() => (ctl.ui.gradeTab = id)}
+        >
+          {label}
+        </button>
+      {/each}
+    </div>
+
+    <div class="content">
+      {#if n}
+        {#if ctl.ui.gradeTab === 'primaries'}
+          <div class="row">
+            <div class="wheels">
+              {#each wheels as w (w.k)}
+                <ColorWheel
+                  label={w.label}
+                  rgb={wheelRgb(w.k)}
+                  master={n.primaries[w.k][3]}
+                  masterReset={mul(w.k) ? 1 : 0}
+                  masterMin={w.mMin}
+                  masterMax={w.mMax}
+                  range={w.range}
+                  readout={wheelReadout(w.k)}
+                  onrgb={(c) => setWheel(w.k, c)}
+                  onmaster={(m) => setMaster(w.k, m)}
+                  oncommit={commit}
+                />
+              {/each}
+            </div>
+            <div class="sliders">
+              <Slider
+                label="Exposure"
+                value={n.linear.exposure}
+                min={-6}
+                max={6}
+                step={0.01}
+                bipolar
+                width="100%"
+                onchange={(v) => ctl.editNode({ linear: { exposure: v } }, 'exposure')}
+              />
+              <Slider
+                label="Temp"
+                value={n.linear.temperature}
+                min={2000}
+                max={15000}
+                step={10}
+                reset={6500}
+                digits={0}
+                unit="K"
+                width="100%"
+                onchange={(v) => ctl.editNode({ linear: { temperature: v } }, 'temp')}
+              />
+              <Slider
+                label="Tint"
+                value={n.linear.tint}
+                min={-1}
+                max={1}
+                step={0.01}
+                bipolar
+                width="100%"
+                onchange={(v) => ctl.editNode({ linear: { tint: v } }, 'tint')}
+              />
+              <Slider
+                label="Contrast"
+                value={n.primaries.contrast}
+                min={0}
+                max={3}
+                step={0.01}
+                reset={1}
+                width="100%"
+                onchange={(v) => ctl.editNode({ primaries: { contrast: v } }, 'contrast')}
+              />
+              <Slider
+                label="Pivot"
+                value={n.primaries.pivot}
+                min={0}
+                max={1}
+                step={0.001}
+                reset={G.PIVOT_18}
+                digits={3}
+                width="100%"
+                onchange={(v) => ctl.editNode({ primaries: { pivot: v } }, 'pivot')}
+              />
+              <Slider
+                label="Sat"
+                value={n.primaries.saturation}
+                min={0}
+                max={3}
+                step={0.01}
+                reset={1}
+                width="100%"
+                onchange={(v) => ctl.editNode({ primaries: { saturation: v } }, 'sat')}
+              />
+              <Slider
+                label="Hue"
+                value={n.primaries.hue * 360}
+                min={-180}
+                max={180}
+                step={0.5}
+                digits={1}
+                unit="°"
+                bipolar
+                width="100%"
+                onchange={(v) => ctl.editNode({ primaries: { hue: v / 360 } }, 'hue')}
+              />
+            </div>
+          </div>
+        {:else if ctl.ui.gradeTab === 'log'}
+          <div class="row">
+            <div class="wheels">
+              {#each logWheels as w (w.k)}
+                <ColorWheel
+                  label={w.label}
+                  rgb={logRgb(w.k)}
+                  master={luma(n.logWheels[w.k])}
+                  masterMin={-0.3}
+                  masterMax={0.3}
+                  range={0.1}
+                  readout={n.logWheels[w.k]}
+                  onrgb={(c) => setLog(w.k, c)}
+                  onmaster={(m) => setLog(w.k, logRgb(w.k), m)}
+                  oncommit={commit}
+                />
+              {/each}
+            </div>
+            <div class="sliders">
+              <Slider
+                label="Low range"
+                value={n.logWheels.lowRange}
+                min={0}
+                max={1}
+                step={0.001}
+                reset={0.333}
+                digits={3}
+                width="100%"
+                onchange={(v) => ctl.editNode({ logWheels: { lowRange: v } }, 'lowRange')}
+              />
+              <Slider
+                label="High range"
+                value={n.logWheels.highRange}
+                min={0}
+                max={1}
+                step={0.001}
+                reset={0.55}
+                digits={3}
+                width="100%"
+                onchange={(v) => ctl.editNode({ logWheels: { highRange: v } }, 'highRange')}
+              />
+              <p class="hint">Ranges are ACEScct values (18 % grey = 0.414).</p>
+            </div>
+          </div>
+        {:else if ctl.ui.gradeTab === 'curves'}
+          <div class="row">
+            <div class="editor">
+              <CurveEditor
+                label={curveCh.toUpperCase()}
+                kind="tone"
+                points={n.curves[curveCh]}
+                stroke={chColor[curveCh]}
+                onchange={(p) => ctl.editNode({ curves: { [curveCh]: p } }, `curve:${curveCh}`)}
+                oncommit={commit}
+              />
+            </div>
+            <div class="side">
+              <div class="seg" role="radiogroup" aria-label="Curve channel">
+                {#each ['y', 'r', 'g', 'b'] as const as c (c)}
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={curveCh === c}
+                    class:on={curveCh === c}
+                    style:color={curveCh === c ? chColor[c] : undefined}
+                    onclick={() => (curveCh = c)}
+                  >
+                    {c.toUpperCase()}{#if !G.isIdentityRgbCurve(n.curves[c])}•{/if}
+                  </button>
+                {/each}
+              </div>
+              <button
+                type="button"
+                class="txt"
+                onclick={() => ctl.editNode({ curves: { [curveCh]: IDENT } })}
+              >
+                Reset {curveCh.toUpperCase()}
+              </button>
+              <button
+                type="button"
+                class="txt"
+                onclick={() => ctl.editNode({ curves: { y: IDENT, r: IDENT, g: IDENT, b: IDENT } })}
+              >
+                Reset all
+              </button>
+              <p class="hint">
+                ACEScct domain. Click to add, drag to move, double-click to remove. Arrows nudge the
+                selected point.
+              </p>
+            </div>
+          </div>
+        {:else if ctl.ui.gradeTab === 'hsl'}
+          {@const d = hslDefs[hsl]}
+          <div class="row">
+            <div class="editor">
+              <CurveEditor
+                label={d.label}
+                kind={d.kind}
+                points={n.curves[hsl]}
+                yMin={-d.y}
+                yMax={d.y}
+                background={d.bg}
+                onchange={(p) => ctl.editNode({ curves: { [hsl]: p } }, `curve:${hsl}`)}
+                oncommit={commit}
+              />
+            </div>
+            <div class="side">
+              <div class="seg col" role="radiogroup" aria-label="HSL curve">
+                {#each Object.entries(hslDefs) as [k, v] (k)}
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={hsl === k}
+                    class:on={hsl === k}
+                    onclick={() => (hsl = k as H)}
+                  >
+                    {v.label}{#if !G.isIdentityDeltaCurve(n.curves[k as H])}&nbsp;•{/if}
+                  </button>
+                {/each}
+              </div>
+              <button
+                type="button"
+                class="txt"
+                onclick={() => ctl.editNode({ curves: { [hsl]: [] } })}
+              >
+                Reset curve
+              </button>
+            </div>
+          </div>
+        {:else if ctl.ui.gradeTab === 'mixer'}
+          <div class="row">
+            <div class="mixer">
+              <span class="h">Channel mixer (ACEScg)</span>
+              <div class="grid3">
+                <span></span><span class="r">R in</span><span class="g">G in</span><span class="b">
+                  B in
+                </span>
+                {#each ['R', 'G', 'B'] as out, r (out)}
+                  <span class="lab">{out} out</span>
+                  {#each [0, 1, 2] as c (c)}
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={n.linear.mixer[r * 3 + c].toFixed(3)}
+                      aria-label="{out} out from {['R', 'G', 'B'][c]} in"
+                      onkeydown={(e) => e.stopPropagation()}
+                      onchange={(e) => {
+                        const m = [...n.linear.mixer];
+                        m[r * 3 + c] = parseFloat((e.currentTarget as HTMLInputElement).value) || 0;
+                        ctl.editNode({ linear: { mixer: m } });
+                      }}
+                    />
+                  {/each}
+                {/each}
+              </div>
+              <div class="mixops">
+                <button
+                  type="button"
+                  class="txt"
+                  onclick={() => ctl.editNode({ linear: { mixer: [1, 0, 0, 0, 1, 0, 0, 0, 1] } })}
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  class="txt"
+                  onclick={() =>
+                    ctl.editNode({ linear: { mixer: [LR, LG, LB, LR, LG, LB, LR, LG, LB] } })}
+                >
+                  Monochrome
+                </button>
+              </div>
+            </div>
+            <div class="cdl">
+              <Toggle
+                checked={n.cdl.enabled}
+                label="ASC CDL (ACEScct)"
+                onchange={(v) => ctl.editNode({ cdl: { enabled: v } })}
+              />
+              {#each ['slope', 'offset', 'power'] as const as k (k)}
+                <div class="cdlrow">
+                  <span class="h">{k}</span>
+                  {#each [0, 1, 2] as c (c)}
+                    <Slider
+                      label={['R', 'G', 'B'][c]}
+                      value={n.cdl[k][c]}
+                      min={k === 'offset' ? -0.5 : 0}
+                      max={k === 'offset' ? 0.5 : 4}
+                      step={0.001}
+                      digits={3}
+                      reset={k === 'offset' ? 0 : 1}
+                      width="150px"
+                      onchange={(v) => {
+                        const a = [...n.cdl[k]] as [number, number, number];
+                        a[c] = v;
+                        ctl.editNode({ cdl: { enabled: true, [k]: a } }, `cdl:${k}${c}`);
+                      }}
+                    />
+                  {/each}
+                </div>
+              {/each}
+              <Slider
+                label="Sat"
+                value={n.cdl.saturation}
+                min={0}
+                max={4}
+                step={0.001}
+                digits={3}
+                reset={1}
+                width="200px"
+                onchange={(v) => ctl.editNode({ cdl: { enabled: true, saturation: v } }, 'cdl:sat')}
+              />
+              <p class="hint mono">
+                slope {n.cdl.slope.map(f3).join(' ')} · offset {n.cdl.offset.map(f3).join(' ')} · power
+                {n.cdl.power.map(f3).join(' ')} · sat {f3(n.cdl.saturation)}
+              </p>
+            </div>
+          </div>
+        {/if}
+      {/if}
+    </div>
+
+    <aside class="stills" aria-label="Stills">
+      <div class="sh">
+        <span>Stills</span>
+        <IconButton
+          icon="camera"
+          label="Grab still (frame + grade)"
+          size={14}
+          disabled={!ctl.state.media || grabbing}
+          onclick={grab}
+        />
+      </div>
+      <div class="list">
+        {#each ctl.stills as s (s.id)}
+          <div class="still">
+            <button
+              type="button"
+              class="thumb"
+              title="{s.name} · click to apply its grade"
+              onclick={() => {
+                ctl.player.setGrade(s.grade);
+                ctl.ui.gradeNode = '';
+              }}
+            >
+              <img src={s.thumb} alt={s.name} />
+            </button>
+            <button
+              type="button"
+              class="del"
+              aria-label="Delete still {s.name}"
+              onclick={() => (ctl.stills = ctl.stills.filter((x) => x.id !== s.id))}
+            >
+              ×
+            </button>
+            <span class="cap">{s.frame}</span>
+          </div>
+        {:else}
+          <p class="hint">Grab a still to keep the frame and its grade.</p>
+        {/each}
+      </div>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .gp {
+    display: flex;
+    flex-direction: column;
+    height: var(--sl-grade-h, 300px);
+    border-top: 1px solid var(--sl-border);
+    background: var(--sl-surface-1);
+    font-size: var(--sl-text-sm);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 34px;
+    padding: 0 6px;
+    border-bottom: 1px solid var(--sl-border);
+    overflow-x: auto;
+  }
+  .nodes,
+  .nodeops,
+  .globalops {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .globalops {
+    gap: 6px;
+  }
+  .node {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    height: 24px;
+    padding: 0 8px 0 6px;
+    border: 1px solid var(--sl-border);
+    border-radius: var(--sl-radius-sm);
+    background: var(--sl-surface-2);
+    color: var(--sl-text-muted);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .node.on {
+    border-color: var(--sl-accent);
+    color: var(--sl-text);
+  }
+  .node.off .name {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  .node:focus-visible {
+    outline: none;
+    box-shadow: var(--sl-focus);
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 1px solid var(--sl-text-muted);
+    border-radius: 50%;
+    background: var(--sl-accent);
+    cursor: pointer;
+  }
+  .dot.dim {
+    background: transparent;
+  }
+  .rename {
+    width: 90px;
+    height: 18px;
+    padding: 0 4px;
+    border: 1px solid var(--sl-border-strong);
+    border-radius: 2px;
+    background: var(--sl-surface-1);
+    color: var(--sl-text);
+    font: inherit;
+  }
+  .num {
+    color: var(--sl-text-faint);
+    font-family: var(--sl-font-mono);
+  }
+  .mod {
+    color: var(--sl-accent);
+  }
+  .grow {
+    flex: 1;
+  }
+  .err {
+    padding: 4px 10px;
+    color: var(--sl-danger);
+  }
+  .body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+  .tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 96px;
+    padding: 6px 4px;
+    border-right: 1px solid var(--sl-border);
+  }
+  .tabs button {
+    height: 26px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: var(--sl-radius-sm);
+    background: none;
+    color: var(--sl-text-muted);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .tabs button.on {
+    background: var(--sl-surface-3);
+    color: var(--sl-text);
+  }
+  .tabs button:focus-visible,
+  .seg button:focus-visible,
+  .txt:focus-visible {
+    outline: none;
+    box-shadow: var(--sl-focus);
+  }
+  .content {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    overflow: auto;
+  }
+  .row {
+    display: flex;
+    gap: 18px;
+    height: 100%;
+    min-height: 200px;
+  }
+  .wheels {
+    display: flex;
+    gap: 10px;
+  }
+  .sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 220px;
+    max-width: 320px;
+    flex: 1;
+  }
+  .sliders :global(.lbl) {
+    width: 64px;
+  }
+  .editor {
+    flex: 1;
+    min-width: 240px;
+    max-width: 560px;
+  }
+  .side {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 180px;
+  }
+  .seg {
+    display: flex;
+    gap: 2px;
+  }
+  .seg.col {
+    flex-direction: column;
+  }
+  .seg button {
+    flex: 1;
+    height: 24px;
+    padding: 0 8px;
+    border: 1px solid var(--sl-border);
+    border-radius: var(--sl-radius-sm);
+    background: none;
+    color: var(--sl-text-muted);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .seg:not(.col) button {
+    text-align: center;
+    font-weight: 600;
+  }
+  .seg button.on {
+    background: var(--sl-surface-3);
+    color: var(--sl-text);
+  }
+  .txt {
+    align-self: flex-start;
+    padding: 3px 8px;
+    border: 1px solid var(--sl-border);
+    border-radius: var(--sl-radius-sm);
+    background: var(--sl-surface-2);
+    color: var(--sl-text-muted);
+    font: inherit;
+    cursor: pointer;
+  }
+  .txt:hover {
+    color: var(--sl-text);
+  }
+  .hint {
+    margin: 0;
+    color: var(--sl-text-faint);
+    font-size: var(--sl-text-xs);
+    line-height: 1.4;
+  }
+  .mono {
+    font-family: var(--sl-font-mono);
+  }
+  .h {
+    color: var(--sl-text-faint);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .mixer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .grid3 {
+    display: grid;
+    grid-template-columns: 48px repeat(3, 64px);
+    gap: 4px;
+    align-items: center;
+    font-size: var(--sl-text-xs);
+  }
+  .grid3 input {
+    width: 64px;
+    height: 22px;
+    padding: 0 4px;
+    border: 1px solid var(--sl-border);
+    border-radius: var(--sl-radius-sm);
+    background: var(--sl-surface-2);
+    color: var(--sl-text);
+    font: var(--sl-text-sm) var(--sl-font-mono);
+    text-align: right;
+  }
+  .lab {
+    color: var(--sl-text-faint);
+  }
+  .r {
+    color: #c98a8a;
+  }
+  .g {
+    color: #8ac99a;
+  }
+  .b {
+    color: #8aa4d9;
+  }
+  .mixops {
+    display: flex;
+    gap: 6px;
+  }
+  .cdl {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .cdlrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cdlrow .h {
+    width: 44px;
+  }
+  .stills {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    border-left: 1px solid var(--sl-border);
+  }
+  .sh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 30px;
+    padding: 0 4px 0 10px;
+    color: var(--sl-text-faint);
+    font-size: var(--sl-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 8px 8px;
+    overflow-y: auto;
+  }
+  .still {
+    position: relative;
+  }
+  .thumb {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 1px solid var(--sl-border);
+    border-radius: var(--sl-radius-sm);
+    background: #000;
+    cursor: pointer;
+  }
+  .thumb:hover {
+    border-color: var(--sl-accent);
+  }
+  .thumb img {
+    display: block;
+    width: 100%;
+  }
+  .del {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--sl-radius-sm);
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--sl-text);
+    cursor: pointer;
+    opacity: 0;
+  }
+  .still:hover .del,
+  .del:focus-visible {
+    opacity: 1;
+  }
+  .cap {
+    position: absolute;
+    left: 4px;
+    bottom: 3px;
+    padding: 0 3px;
+    border-radius: 2px;
+    background: rgba(0, 0, 0, 0.6);
+    color: var(--sl-text-muted);
+    font: var(--sl-text-xs) var(--sl-font-mono);
+  }
+  @media (max-width: 900px) {
+    .stills {
+      display: none;
+    }
+    .row {
+      flex-wrap: wrap;
+    }
+  }
+</style>

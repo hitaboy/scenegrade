@@ -13,6 +13,7 @@
   import Help from './Help.svelte';
   import IconButton from './IconButton.svelte';
   import Icon from './Icon.svelte';
+  import GradePanel from '../grade/GradePanel.svelte';
   import tokens from '../tokens.css?inline';
 
   let {
@@ -27,7 +28,8 @@
   }: {
     /** Anything `Player.load` accepts. */
     src?: MediaInput;
-    layout?: 'full' | 'compact';
+    /** 'grade' = full layout with the grade palette open. */
+    layout?: 'full' | 'compact' | 'grade';
     options?: PlayerOptions;
     controller?: PlayerController;
     /** Use an existing headless Player instead of creating one. */
@@ -40,7 +42,9 @@
   // Options/player are read once at construction (changing them later has no effect by design).
   const ctl = untrack(() => new PlayerController(options, player));
   controller = ctl;
-  ctl.ui.panelOpen = untrack(() => panel && layout === 'full');
+  const full = $derived(layout !== 'compact');
+  ctl.ui.panelOpen = untrack(() => panel && layout !== 'compact');
+  ctl.ui.gradeOpen = untrack(() => layout === 'grade');
 
   let root: HTMLDivElement;
   let fileInput: HTMLInputElement;
@@ -172,12 +176,12 @@
     onchange={(e) => pick(e, true)}
   />
 
-  {#if layout === 'full' && !ctl.ui.clean}
+  {#if full && !ctl.ui.clean}
     <TopBar {ctl} onopen={allowDrop ? () => fileInput.click() : undefined} />
   {/if}
 
   <div class="main">
-    {#if layout === 'full' && !ctl.ui.clean}
+    {#if full && !ctl.ui.clean}
       <ToolRail {ctl} oncompare={compareClick} />
     {/if}
 
@@ -213,7 +217,7 @@
           </button>
         </div>
       {/if}
-      {#if ctl.state.mediaB && layout === 'full' && !ctl.ui.clean}
+      {#if ctl.state.mediaB && full && !ctl.ui.clean}
         <div class="cmp" role="group" aria-label="Compare mode">
           <span class="ab">A: {ctl.state.media?.name} · B: {ctl.state.mediaB.name}</span>
           {#each compareModes as m (m)}
@@ -253,7 +257,7 @@
         </div>{/if}
     </div>
 
-    {#if layout === 'full' && ctl.ui.panelOpen && !ctl.ui.clean}
+    {#if full && ctl.ui.panelOpen && !ctl.ui.clean}
       <aside class="panel" aria-label="Analysis panel">
         <div class="tabs" role="tablist">
           {#each [['scopes', 'Scopes', 'scopes'], ['color', 'Colour', 'sliders'], ['info', 'Info', 'info']] as [id, label, icon] (id)}
@@ -282,7 +286,7 @@
           {#if ctl.ui.panelTab === 'info'}<InfoPanel {ctl} />{/if}
         </div>
       </aside>
-    {:else if layout === 'full' && !ctl.ui.clean}
+    {:else if full && !ctl.ui.clean}
       <button
         type="button"
         class="panel-open"
@@ -297,6 +301,9 @@
 
   {#if !ctl.ui.clean}
     <Transport {ctl} compact={layout === 'compact'} onfullscreen={fullscreen} />
+  {/if}
+  {#if full && ctl.ui.gradeOpen && !ctl.ui.clean}
+    <GradePanel {ctl} />
   {/if}
 </div>
 
