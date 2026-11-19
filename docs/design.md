@@ -1,6 +1,6 @@
 # UI design
 
-![Full layout](images/player.jpg)
+![Full layout](images/hero.jpg)
 
 ## Principles
 

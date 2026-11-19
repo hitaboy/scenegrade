@@ -11,3 +11,4 @@ __pycache__/
 /packages/exr-wasm/build/
 .claude/settings.local.json
 /packages/exr-wasm/dist-wasm/
+/apps/demo/public/media/local/
