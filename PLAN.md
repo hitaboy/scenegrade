@@ -233,6 +233,7 @@ Estimaciones para 1 desarrollador a tiempo completo; orientativas.
 | **8. Web Component + API pública**     | `<aces-player>`, atributos/props/eventos, build CDN (ESM) + npm, wrapper React fino.                                                                                                                                                                                                                                                                  | Integración en 1 línea.                                          | 1–2     |
 | **9. Comparación A/B y extras**        | Wipe, lado a lado, diferencia; muestras de probe fijadas.                                                                                                                                                                                                                                                                                             | —                                                                | 1–2     |
 | **10. Calidad y lanzamiento**          | Matriz de navegadores, tests de regresión visual, benchmarks automáticos, docs (Storybook/VitePress), demos, licencias (OpenEXR/OCIO BSD-3, ACES).                                                                                                                                                                                                    | v1.0                                                             | 2       |
+| **12–17. Grading (v2)**                | Motor de grade (nodos → WGSL), primarias/curvas/HSL, cualificador y ventanas, exportar el look (CDL/CLF/.cube/AMF), render en el cliente (WebCodecs, EXR). Ver sección 8.                                                                                                                                                                             | Herramienta de grading en el navegador.                          | ~12 + 4 |
 | **11. Opcional**                       | Decoder ProRes en WebGPU compute, ProRes RAW, ocio-wasm (configs custom), fallback WebGL2, anotaciones, OTIO, sesiones sincronizadas.                                                                                                                                                                                                                 | —                                                                | —       |
 
 **Total v1 ≈ 26–29 semanas.** Un **MVP útil** (visor EXR + ACES + scopes + web component)
@@ -336,3 +337,123 @@ THIRD_PARTY_NOTICES.md  CHANGELOG.md
 1. Fase 0 (a): compilar OpenEXRCore con Emscripten y medir el decode de un EXR 4K DWAA.
 2. Fase 0 (d): script OCIO que exporte el shader del ODT ACES 2.0 sRGB y transpilarlo a WGSL.
 3. Elegir herramienta de diseño y arrancar wireframes en paralelo.
+
+---
+
+## 8. Grading (v2): etalonar en cualquier sitio
+
+Objetivo: una herramienta de **grading completa en el navegador**. Abres un enlace, etalonas
+con color ACES fiel y exportas el look o el render, sin instalar nada. No sustituye a la sala
+de color. Cubre lo que hoy exige un equipo con Resolve: on-set, dailies, look development,
+revisión remota y etalonaje de piezas cortas.
+
+Estado de partida (v1): el pipeline ya etalona en ACEScct en la GPU (exposición, saturación,
+CDL, LUT .cube), y los scopes evalúan la misma cadena WGSL que el visor.
+
+### 8.1 Modelo de grade
+
+- **Espacio de trabajo:** ACEScct por defecto (operaciones "log", como Resolve/Baselight) y
+  ACEScg para operaciones lineales (exposición, balance de blancos en linear, mezcla de canales).
+- **Grafo de nodos en serie** (v2.0), con paralelo y capa más adelante. Cada nodo tiene:
+  - operaciones primarias, curvas, cualificador, ventanas y su máscara combinada;
+  - mezcla (opacidad) y bypass.
+- **Compilación a WGSL:** el grafo se traduce a un shader. Se regenera solo al cambiar la
+  _estructura_; los valores van en un uniform/storage buffer. Las curvas y las curvas HSL se
+  hornean como LUT 1D de 1024 muestras en textura.
+- **Datos:** el grade es JSON serializable y versionado: `Grade { version, nodes[], ... }`.
+  Puede ser por clip, por plano (rango de frames) o con keyframes por parámetro.
+  - Es determinista: la misma entrada da los mismos píxeles en GPU y en la referencia CPU
+    (tests).
+
+### 8.2 Herramientas (por prioridad)
+
+| Grupo       | Herramientas                                                                                                                                                        |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primarias   | Ruedas lift/gamma/gain/offset (y log: shadow/mid/high con rangos), contraste + pivote, saturación, temperatura/tinte, balance por cuentagotas, mezclador de canales |
+| Curvas      | Curvas custom (Y + RGB), curvas HSL: hue vs hue/sat/lum, lum vs sat, sat vs sat                                                                                     |
+| Secundarias | Cualificador HSL con soft/blur/denoise de máscara, vista de máscara (highlight), keyer de luminancia                                                                |
+| Ventanas    | Círculo, rectángulo, polígono y bézier, con softness, inversión y combinación; tracking (punto/planar) en fase tardía                                               |
+| Otros       | Blur/sharpen, viñeta, grano (estático, determinista), match de planos por estadísticas, galería de stills (grabar y aplicar grades)                                 |
+
+### 8.3 UI (página "Color")
+
+- **Layout Grade**, nuevo modo junto a `full`/`compact`:
+  - visor y scopes grandes;
+  - debajo, **paleta** con pestañas: Primarias · Curvas · HSL · Cualificador · Ventanas · Nodos;
+  - a la izquierda, galería de stills; a la derecha, editor de nodos.
+- **Ruedas:** arrastre normal más fino con `Shift`, doble clic para resetear, rueda del ratón
+  sobre el anillo para el master y valores numéricos editables.
+- **Control surfaces:**
+  - **WebHID/WebMIDI** para Tangent, Blackmagic Micro/Mini Panel y controladores MIDI (fase
+    tardía; Tangent necesita el mapeo del protocolo);
+  - **Gamepad API** como opción barata.
+- **Historial:** undo/redo de todo, y comparación del grade contra el original (bypass global)
+  y contra stills de la galería con el wipe que ya existe.
+- **Táctil:** paleta usable en tablet (iPad con Safari WebGPU), para on-set.
+
+### 8.4 Interoperabilidad (exportar el look)
+
+| Formato                      | Uso                                                                               | Fidelidad                            |
+| ---------------------------- | --------------------------------------------------------------------------------- | ------------------------------------ |
+| ASC CDL (.cdl/.cc/.ccc, EDL) | Estándar de on-set → post. Se exporta el **nodo CDL** o una aproximación ajustada | Exacta solo para operaciones CDL     |
+| **ACES CLF** (.clf)          | Look completo (LUTs + matrices + CDL), formato oficial de ACES y OCIO             | Alta                                 |
+| .cube 3D (33/65)             | Universal (Resolve, Premiere, cámaras, monitores)                                 | Muestreada (error medido y mostrado) |
+| ACES AMF                     | Metadatos de pipeline ACES (IDT/LMT/ODT) para el intercambio entre herramientas   | Referencias                          |
+| Proyecto (.json)             | Grade nativo, con nodos y keyframes                                               | Exacta                               |
+
+Importar: CDL/CC/CCC, .cube, CLF y AMF, para seguir en la web un look hecho en el set.
+
+### 8.5 Render en el cliente
+
+Pipeline: `decode → grade + view (GPU) → readback → VideoEncoder / encoder WASM → Mediabunny mux`.
+El audio se copia sin recodificar.
+
+| Salida                         | Cómo                                                   | Notas                                                     |
+| ------------------------------ | ------------------------------------------------------ | --------------------------------------------------------- |
+| H.264 / HEVC (8/10 bits) / AV1 | WebCodecs `VideoEncoder`, normalmente por hardware     | 10 bits según hardware; detección con `isConfigSupported` |
+| EXR (secuencia, ACES AP0/AP1)  | OpenEXR WASM (añadir el writer), en un pool de workers | Render "graded scene-linear" para VFX                     |
+| ProRes 422/4444                | Encoder WASM (FFmpeg `prores_ks`, LGPL)                | Lento (medir). Paquete opcional, cargado bajo demanda     |
+| PNG/TIFF 16 bits / stills      | Readback + encoder en worker                           | Grabs para la galería y referencias                       |
+
+- **Ficheros grandes:** escritura en streaming con la File System Access API (Chrome/Edge);
+  en otros navegadores, descarga por partes.
+- **Lotes:** render de varios clips o planos con su grade.
+- **Opciones de render:** resolución, view o espacio de salida (display-referred o
+  scene-linear) y quemar overlays (TC, marca de agua).
+- **Rendimiento:** se rinde en un `OffscreenCanvas` o en una textura sin presentar, y la
+  readback es asíncrona con doble buffer. Objetivo: 1080p HEVC ≥ tiempo real en M-series y
+  4K ≥ 0,5×.
+
+### 8.6 Persistencia y colaboración
+
+- **Local primero:** el proyecto vive en OPFS/IndexedDB; abrir y guardar `.json` del proyecto.
+  Los medios no se copian; se referencian con File System Access handles o URLs.
+- **API para el anfitrión:**
+  - eventos `gradechange` y métodos `getGrade()`, `setGrade()` y `render()`;
+  - cualquier plataforma (MAM, review tools) puede guardar el grade en su backend.
+- **Opcional:** sesiones en vivo (WebRTC/WebSocket), en las que el colorista etalona y el
+  cliente ve el resultado sincronizado; y comentarios por frame.
+
+### 8.7 Fases
+
+| Fase                                  | Contenido                                                                                            | Semanas |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------- |
+| **12. Motor de grade**                | Modelo de datos, compilador grafo → WGSL, referencia CPU y tests, undo/redo, API `getGrade/setGrade` | 3       |
+| **13. Primarias + curvas + UI Grade** | Ruedas, log wheels, contraste/pivote, temperatura/tinte, curvas Y/RGB y HSL, layout Grade, stills    | 4       |
+| **14. Exportar e importar el look**   | CDL/CC/CCC, CLF, .cube con error medido, AMF, proyecto .json                                         | 2       |
+| **15. Render en el cliente**          | VideoEncoder (H.264/HEVC/AV1) + mux + audio, writer EXR, File System Access, cola de render          | 3       |
+| **16. Secundarias**                   | Cualificador HSL, ventanas con softness, vista de máscara, nodos con mezcla, keyframes               | 4       |
+| **17. Extras**                        | ProRes encoder WASM, tracking, control surfaces (WebHID/MIDI), match de planos, sesiones en vivo     | —       |
+
+**Grading útil (12–15) ≈ 12 semanas.**
+
+### 8.8 Riesgos específicos
+
+| Riesgo                                                 | Mitigación                                                                                                |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| El shader crece con muchos nodos y secundarias         | Compilar solo lo usado; por encima de N nodos, multipass con texturas intermedias rgba16float             |
+| Diferencias de look entre la web y Resolve al exportar | CLF como formato principal; tests de ida y vuelta con OCIO (`ociochecklut`); error del .cube visible      |
+| Readback lenta en 4K                                   | Readback asíncrona en anillo de buffers; encoder alimentado desde `VideoFrame` de textura cuando se pueda |
+| Sin encoder ProRes nativo                              | Paquete WASM opcional; recomendar HEVC 10 bits o EXR para entrega intermedia                              |
+| Memoria de pestaña en lotes largos                     | Streaming a disco, frames liberados en cuanto se codifican, sin caché de salida                           |
+| Control surfaces propietarias                          | Empezar por MIDI genérico y Gamepad; Tangent/Blackmagic cuando sea posible                                |
