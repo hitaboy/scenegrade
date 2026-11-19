@@ -22,7 +22,7 @@
 
 <style>
   .sec {
-    border-bottom: 1px solid var(--sl-border);
+    border-bottom: 1px solid var(--sg-border);
   }
   header {
     display: flex;
@@ -39,9 +39,9 @@
     padding: 0;
     border: 0;
     background: none;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     font: inherit;
-    font-size: var(--sl-text-xs);
+    font-size: var(--sg-text-xs);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -49,11 +49,11 @@
     text-align: left;
   }
   .hd:hover {
-    color: var(--sl-text);
+    color: var(--sg-text);
   }
   .hd:focus-visible {
     outline: none;
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   .chev {
     transition: transform 0.12s;

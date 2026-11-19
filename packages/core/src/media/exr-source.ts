@@ -1,4 +1,4 @@
-import { ExrWorkerPool, type ExrInfo, type ExrPartInfo } from '@scenelinear/exr-wasm';
+import { ExrWorkerPool, type ExrInfo, type ExrPartInfo } from '@scenegrade/exr-wasm';
 import type {
   ColorHints,
   FrameData,

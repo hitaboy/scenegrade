@@ -1,11 +1,11 @@
-# @scenelinear/element
+# @scenegrade/element
 
-`<scenelinear-player>`, a drop-in Web Component for ACES-managed playback of EXR, ProRes and video,
+`<scenegrade-player>`, a drop-in Web Component for ACES-managed playback of EXR, ProRes and video,
 with scopes, false colour, zebra and A/B compare.
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/@scenelinear/element/dist/scenelinear-player.js"></script>
-<scenelinear-player src="shot.mov" input-space="acescct" view="srgb-aces2-sdr709"></scenelinear-player>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@scenegrade/element/dist/scenegrade-player.js"></script>
+<scenegrade-player src="shot.mov" input-space="acescct" view="srgb-aces2-sdr709"></scenegrade-player>
 ```
 
 Attributes, methods, events and theming: see the [integration guide](../../docs/integration.md).

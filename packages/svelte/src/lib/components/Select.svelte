@@ -58,8 +58,8 @@
     min-width: 0;
   }
   .lbl {
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     white-space: nowrap;
@@ -71,29 +71,29 @@
     appearance: none;
     min-width: 0;
     width: 100%;
-    height: var(--sl-control-h);
+    height: var(--sg-control-h);
     padding: 0 22px 0 8px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
-    background: var(--sl-surface-2)
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
+    background: var(--sg-surface-2)
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 16 16' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E")
       no-repeat right 7px center;
-    color: var(--sl-text);
+    color: var(--sg-text);
     font: inherit;
-    font-size: var(--sl-text-sm);
+    font-size: var(--sg-text-sm);
     text-overflow: ellipsis;
     cursor: pointer;
   }
   select:hover {
-    border-color: var(--sl-border-strong);
+    border-color: var(--sg-border-strong);
   }
   select:focus-visible {
     outline: none;
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   option,
   optgroup {
-    background: var(--sl-surface-2);
-    color: var(--sl-text);
+    background: var(--sg-surface-2);
+    color: var(--sg-text);
   }
 </style>

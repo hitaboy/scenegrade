@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// @scenelinear/core/color — ACES colour management (analytic inputs, OCIO-baked ACES 2.0 views).
+// @scenegrade/core/color — ACES colour management (analytic inputs, OCIO-baked ACES 2.0 views).
 export type { Vec3, Mat3 } from './math.js';
 export { halfToFloat, floatToHalf } from './half.js';
 export {

@@ -1,54 +1,54 @@
 /*
- * scenelinear design tokens.
+ * scenegrade design tokens.
  *
  * The UI is strictly NEUTRAL grey (equal R=G=B): a tinted interface shifts how colour in the image is
  * perceived. The single accent is used sparingly for state (active tool, playhead) and is kept low in
  * saturation. Override any token on the host element:
  *
- *   scenelinear-player { --sl-accent: #6aa0ff; --sl-radius: 2px; }
+ *   scenegrade-player { --sg-accent: #6aa0ff; --sg-radius: 2px; }
  */
 :root,
 :host {
   /* Neutral surfaces (sRGB, R=G=B) */
-  --sl-bg: #161616;
-  --sl-viewer-bg: #1c1c1c;
-  --sl-surface-1: #1f1f1f;
-  --sl-surface-2: #262626;
-  --sl-surface-3: #303030;
-  --sl-border: #3a3a3a;
-  --sl-border-strong: #4a4a4a;
+  --sg-bg: #161616;
+  --sg-viewer-bg: #1c1c1c;
+  --sg-surface-1: #1f1f1f;
+  --sg-surface-2: #262626;
+  --sg-surface-3: #303030;
+  --sg-border: #3a3a3a;
+  --sg-border-strong: #4a4a4a;
 
   /* Text */
-  --sl-text: #d6d6d6;
-  --sl-text-muted: #9a9a9a;
-  --sl-text-faint: #6e6e6e;
+  --sg-text: #d6d6d6;
+  --sg-text-muted: #9a9a9a;
+  --sg-text-faint: #6e6e6e;
 
   /* State */
-  --sl-accent: #8fb3e8;
-  --sl-accent-weak: rgba(143, 179, 232, 0.16);
-  --sl-warn: #e0b45a;
-  --sl-danger: #e06a5a;
-  --sl-ok: #7cc48a;
-  --sl-playhead: #e8e8e8;
-  --sl-cache: #5a7aa8;
-  --sl-inout: rgba(143, 179, 232, 0.18);
+  --sg-accent: #8fb3e8;
+  --sg-accent-weak: rgba(143, 179, 232, 0.16);
+  --sg-warn: #e0b45a;
+  --sg-danger: #e06a5a;
+  --sg-ok: #7cc48a;
+  --sg-playhead: #e8e8e8;
+  --sg-cache: #5a7aa8;
+  --sg-inout: rgba(143, 179, 232, 0.18);
 
   /* Type */
-  --sl-font:
+  --sg-font:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --sl-font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
-  --sl-text-xs: 10px;
-  --sl-text-sm: 11px;
-  --sl-text-md: 12px;
-  --sl-text-lg: 13px;
+  --sg-font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+  --sg-text-xs: 10px;
+  --sg-text-sm: 11px;
+  --sg-text-md: 12px;
+  --sg-text-lg: 13px;
 
   /* Geometry */
-  --sl-radius: 4px;
-  --sl-radius-sm: 3px;
-  --sl-gap: 8px;
-  --sl-bar-h: 36px;
-  --sl-rail-w: 40px;
-  --sl-panel-w: 300px;
-  --sl-control-h: 24px;
-  --sl-focus: 0 0 0 2px var(--sl-accent);
+  --sg-radius: 4px;
+  --sg-radius-sm: 3px;
+  --sg-gap: 8px;
+  --sg-bar-h: 36px;
+  --sg-rail-w: 40px;
+  --sg-panel-w: 300px;
+  --sg-control-h: 24px;
+  --sg-focus: 0 0 0 2px var(--sg-accent);
 }

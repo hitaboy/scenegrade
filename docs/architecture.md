@@ -3,18 +3,18 @@
 ## Layers
 
 ```
-@scenelinear/element   <scenelinear-player> (Svelte compiled as a custom element, shadow DOM)
+@scenegrade/element   <scenegrade-player> (Svelte compiled as a custom element, shadow DOM)
         │
-@scenelinear/svelte    ScenePlayer = TopBar + ToolRail + Viewer + panels + Transport
+@scenegrade/svelte    ScenePlayer = TopBar + ToolRail + Viewer + panels + Transport
         │              PlayerController bridges the Player to Svelte 5 runes ($state)
         │
-@scenelinear/core      Player (state, cache, clock, prefetch, audio)
+@scenegrade/core      Player (state, cache, clock, prefetch, audio)
         ├── media/     FrameSource implementations: ExrSource, VideoSource, BrowserImageSource
         ├── gpu/       Renderer (decode + display passes), Surface (one per canvas), ScopeEngine
         ├── grade/     grade model, GPU interpreter (WGSL), CPU reference, undo history
         └── color/     input transforms, ACES view LUTs, CDL, .cube, false colour (CPU + WGSL)
         │
-@scenelinear/exr-wasm  OpenEXRCore → WASM, ExrWorkerPool
+@scenegrade/exr-wasm  OpenEXRCore → WASM, ExrWorkerPool
 mediabunny             demux (MOV/MP4/MKV/WebM), WebCodecs; @mediabunny/prores = TurboRes WASM
 ```
 

@@ -54,7 +54,7 @@ jobs:
         env:
           PW_CHROMIUM: '1'
         run: |
-          pnpm --filter @scenelinear/demo exec playwright install --with-deps chromium
+          pnpm --filter @scenegrade/demo exec playwright install --with-deps chromium
           pnpm e2e
 
       - uses: actions/upload-artifact@v4

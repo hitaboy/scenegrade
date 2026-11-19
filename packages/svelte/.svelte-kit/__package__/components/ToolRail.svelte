@@ -83,17 +83,17 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
-    width: var(--sl-rail-w);
+    width: var(--sg-rail-w);
     padding: 6px 0;
-    border-right: 1px solid var(--sl-border);
-    background: var(--sl-surface-1);
+    border-right: 1px solid var(--sg-border);
+    background: var(--sg-surface-1);
     overflow-y: auto;
   }
   .sep {
     width: 20px;
     height: 1px;
     margin: 4px 0;
-    background: var(--sl-border);
+    background: var(--sg-border);
   }
   .grow {
     flex: 1;

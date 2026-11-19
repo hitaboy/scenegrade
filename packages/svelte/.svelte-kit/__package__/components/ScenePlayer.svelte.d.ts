@@ -1,4 +1,4 @@
-import type { MediaInput, PlayerOptions, Player } from '@scenelinear/core';
+import type { MediaInput, PlayerOptions, Player } from '@scenegrade/core';
 import { PlayerController } from '../controller.svelte.js';
 type $$ComponentProps = {
     /** Anything `Player.load` accepts. */

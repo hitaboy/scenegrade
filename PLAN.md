@@ -1,4 +1,4 @@
-# ACES Web Player — Plan de proyecto
+# scenegrade — Plan de proyecto
 
 Player web profesional de **vídeo e imágenes (EXR y demás)** con gestión de color **ACES**,
 herramientas de análisis (histograma, waveform, vectorscopio, falso color, zebra…) y fácil
@@ -291,6 +291,9 @@ sale con las fases 0–4 + 8: ~13–14 semanas.
   ACES como nombre del proyecto ni usar su logo: mejor un nombre propio y "ACES" en la
   descripción ("ACES-managed web player").
 - Comprobar que el nombre esté libre en npm, en GitHub y como dominio antes de publicar.
+- **Decidido (19/11/2026): `scenegrade`** (scene-linear + grade). Paquetes `@scenegrade/*`,
+  elemento `<scenegrade-player>`, tokens CSS `--sg-*`. Libre en npm y sin repos con ese nombre
+  en GitHub. Pendiente: crear la organización `@scenegrade` en npm y el repo en GitHub.
 
 ### Estructura del repo
 

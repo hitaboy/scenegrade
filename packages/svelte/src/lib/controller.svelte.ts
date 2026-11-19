@@ -9,7 +9,7 @@ import {
   type Grade,
   type GradeNode,
   type GradeNodePatch,
-} from '@scenelinear/core';
+} from '@scenegrade/core';
 
 export interface Still {
   id: string;

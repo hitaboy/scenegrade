@@ -1,7 +1,7 @@
 {
-  "name": "@scenelinear/svelte",
+  "name": "@scenegrade/svelte",
   "version": "0.1.0",
-  "description": "Svelte 5 components for the scenelinear ACES web player (viewer, scopes, transport, panels).",
+  "description": "Svelte 5 components for scenegrade: grade palette (wheels, curves, HSL), viewer, scopes, transport and panels.",
   "license": "Apache-2.0",
   "type": "module",
   "svelte": "./src/lib/index.ts",
@@ -25,7 +25,7 @@
     "svelte": "^5.40.0"
   },
   "dependencies": {
-    "@scenelinear/core": "workspace:*"
+    "@scenegrade/core": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/package": "^3.0.3",
@@ -50,7 +50,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hitaboy/scenelinear.git",
+    "url": "git+https://github.com/hitaboy/scenegrade.git",
     "directory": "packages/svelte"
   }
 }

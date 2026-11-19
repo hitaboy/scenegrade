@@ -3,33 +3,33 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>scenelinear-player — plain HTML example</title>
-    <script type="module" src="../dist/scenelinear-player.js"></script>
+    <title>scenegrade-player — plain HTML example</title>
+    <script type="module" src="../dist/scenegrade-player.js"></script>
     <style>
       body { margin: 0; padding: 24px; background: #111; color: #ccc; font: 14px system-ui, sans-serif; }
-      scenelinear-player { height: 70vh; border: 1px solid #333; }
+      scenegrade-player { height: 70vh; border: 1px solid #333; }
       .compact { height: 300px; max-width: 560px; margin-top: 24px; }
       code { color: #eee; }
     </style>
   </head>
   <body>
-    <p>One line of HTML: <code>&lt;scenelinear-player src="…" input-space="acescct"&gt;</code></p>
-    <scenelinear-player
+    <p>One line of HTML: <code>&lt;scenegrade-player src="…" input-space="acescct"&gt;</code></p>
+    <scenegrade-player
       id="p"
       src="http://localhost:5199/media/generated/video/chart_acescct_prores422hq.mov"
       input-space="acescct"
       view="srgb-aces2-sdr709"
       tools="zebra"
-    ></scenelinear-player>
+    ></scenegrade-player>
 
-    <scenelinear-player
+    <scenegrade-player
       class="compact"
       layout="compact"
       src="http://localhost:5199/media/generated/exr/seq/chart.####.exr"
       first="1001"
       last="1048"
       autoplay
-    ></scenelinear-player>
+    ></scenegrade-player>
 
     <script type="module">
       const p = document.getElementById('p');

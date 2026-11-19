@@ -1,4 +1,4 @@
-import { Player, type PlayerOptions, type PlayerState, type DisplaySettings, type ProbeResult, type MediaInput, type OpenOptions } from '@scenelinear/core';
+import { Player, type PlayerOptions, type PlayerState, type DisplaySettings, type ProbeResult, type MediaInput, type OpenOptions } from '@scenegrade/core';
 /**
  * Bridges the headless Player to Svelte 5 runes. Components read `ctl.state` / `ctl.settings`
  * reactively and call `ctl.player.*` or `ctl.update()` to change things.
@@ -34,6 +34,6 @@ export declare class PlayerController {
     private unsub;
     constructor(opts?: PlayerOptions, existing?: Player);
     update(patch: Partial<DisplaySettings>): void;
-    load(input: MediaInput, opts?: OpenOptions): Promise<import("@scenelinear/core").MediaInfo>;
+    load(input: MediaInput, opts?: OpenOptions): Promise<import("@scenegrade/core").MediaInfo>;
     dispose(): void;
 }

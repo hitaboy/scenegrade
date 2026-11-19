@@ -1,7 +1,7 @@
 {
-  "name": "@scenelinear/core",
+  "name": "@scenegrade/core",
   "version": "0.1.0",
-  "description": "Headless WebGPU engine for ACES-managed playback of EXR, ProRes and video: colour pipeline, scopes, overlays and frame-accurate playback.",
+  "description": "Headless WebGPU engine for colour grading and ACES-managed playback of EXR, ProRes and video: node grade, colour pipeline, scopes, overlays and frame-accurate playback.",
   "license": "Apache-2.0",
   "type": "module",
   "sideEffects": false,
@@ -30,7 +30,7 @@
     "check": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@scenelinear/exr-wasm": "workspace:*",
+    "@scenegrade/exr-wasm": "workspace:*",
     "@mediabunny/prores": "^1.66.1",
     "mediabunny": "^1.66.1"
   },
@@ -58,10 +58,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hitaboy/scenelinear.git",
+    "url": "git+https://github.com/hitaboy/scenegrade.git",
     "directory": "packages/core"
   },
   "keywords": [
+    "color-grading",
+    "colour-grading",
     "aces",
     "exr",
     "openexr",

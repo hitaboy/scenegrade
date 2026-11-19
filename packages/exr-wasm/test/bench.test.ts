@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Decode timings for 1920x1080 RGBA "photographic" plates (chart + texture + grain).
-// Prints a table; run alone with:  pnpm --filter @scenelinear/exr-wasm test bench
+// Prints a table; run alone with:  pnpm --filter @scenegrade/exr-wasm test bench
 import { beforeAll, describe, expect, test } from 'vitest';
 import { createExrDecoder, type ExrDecoder } from '../src/index.ts';
 import { haveMedia, haveWasm, loadManifest, readMedia } from './helpers.ts';

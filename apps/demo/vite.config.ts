@@ -7,9 +7,9 @@ export default defineConfig({
   worker: { format: 'es' },
   optimizeDeps: {
     exclude: [
-      '@scenelinear/core',
-      '@scenelinear/exr-wasm',
-      '@scenelinear/svelte',
+      '@scenegrade/core',
+      '@scenegrade/exr-wasm',
+      '@scenegrade/svelte',
       '@mediabunny/prores',
       'turbores',
     ],

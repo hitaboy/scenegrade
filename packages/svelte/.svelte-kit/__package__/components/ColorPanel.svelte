@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { color } from '@scenelinear/core';
+  import { color } from '@scenegrade/core';
   import type { PlayerController } from '../controller.svelte.js';
   import Section from './Section.svelte';
   import Slider from './Slider.svelte';
@@ -127,8 +127,8 @@
     gap: 2px;
   }
   .k {
-    color: var(--sl-text-muted);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-muted);
+    font-size: var(--sg-text-xs);
     text-transform: capitalize;
   }
   .row {
@@ -145,36 +145,36 @@
   .file span {
     display: block;
     padding: 5px 8px;
-    border: 1px dashed var(--sl-border-strong);
-    border-radius: var(--sl-radius-sm);
-    color: var(--sl-text-muted);
-    font-size: var(--sl-text-sm);
+    border: 1px dashed var(--sg-border-strong);
+    border-radius: var(--sg-radius-sm);
+    color: var(--sg-text-muted);
+    font-size: var(--sg-text-sm);
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .file:focus-within span {
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   .link {
     border: 0;
     background: none;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     font: inherit;
-    font-size: var(--sl-text-sm);
+    font-size: var(--sg-text-sm);
     text-decoration: underline;
     cursor: pointer;
   }
   .err {
     margin: 0;
-    color: var(--sl-danger);
-    font-size: var(--sl-text-sm);
+    color: var(--sg-danger);
+    font-size: var(--sg-text-sm);
   }
   .note {
     margin: 0;
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-xs);
   }
   .legend {
     display: grid;
@@ -183,8 +183,8 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    color: var(--sl-text-muted);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-muted);
+    font-size: var(--sg-text-xs);
   }
   .legend li {
     display: flex;

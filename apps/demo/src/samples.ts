@@ -1,4 +1,4 @@
-import type { MediaInput } from '@scenelinear/core';
+import type { MediaInput } from '@scenegrade/core';
 
 export interface Sample {
   id: string;

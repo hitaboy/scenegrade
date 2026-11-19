@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { ScopeKind } from '@scenelinear/core';
+  import type { ScopeKind } from '@scenegrade/core';
   import type { PlayerController } from '../controller.svelte.js';
 
   let {
@@ -107,7 +107,7 @@
     position: relative;
     width: 100%;
     background: #000;
-    border-radius: var(--sl-radius-sm);
+    border-radius: var(--sg-radius-sm);
     overflow: hidden;
   }
   canvas,
@@ -142,6 +142,6 @@
   }
   svg text {
     fill: rgba(255, 255, 255, 0.45);
-    font: 9px var(--sl-font-mono);
+    font: 9px var(--sg-font-mono);
   }
 </style>

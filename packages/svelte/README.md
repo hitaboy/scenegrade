@@ -1,10 +1,10 @@
-# @scenelinear/svelte
+# @scenegrade/svelte
 
-Svelte 5 components for [scenelinear](../../README.md).
+Svelte 5 components for [scenegrade](../../README.md).
 
 ```svelte
 <script>
-  import { ScenePlayer } from '@scenelinear/svelte';
+  import { ScenePlayer } from '@scenegrade/svelte';
 </script>
 
 <div style="height: 80vh"><ScenePlayer src="/shot.mov" /></div>

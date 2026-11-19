@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { framesToTimecode, timecodeToFrames } from '@scenelinear/core';
+  import { framesToTimecode, timecodeToFrames } from '@scenegrade/core';
   import type { PlayerController } from '../controller.svelte.js';
   import IconButton from './IconButton.svelte';
   import Timeline from './Timeline.svelte';
@@ -173,8 +173,8 @@
     gap: 10px;
     height: 44px;
     padding: 0 8px;
-    border-top: 1px solid var(--sl-border);
-    background: var(--sl-surface-1);
+    border-top: 1px solid var(--sg-border);
+    background: var(--sg-surface-1);
   }
   .btns {
     display: flex;
@@ -192,55 +192,55 @@
     height: 20px;
     padding: 0 4px;
     border: 1px solid transparent;
-    border-radius: var(--sl-radius-sm);
+    border-radius: var(--sg-radius-sm);
     background: none;
-    color: var(--sl-text);
-    font: 500 13px var(--sl-font-mono);
+    color: var(--sg-text);
+    font: 500 13px var(--sg-font-mono);
     text-align: right;
     cursor: text;
   }
   input.tc {
-    border-color: var(--sl-border-strong);
-    background: var(--sl-surface-2);
+    border-color: var(--sg-border-strong);
+    background: var(--sg-surface-2);
   }
   .sub {
-    color: var(--sl-text-faint);
-    font: var(--sl-text-xs) var(--sl-font-mono);
+    color: var(--sg-text-faint);
+    font: var(--sg-text-xs) var(--sg-font-mono);
   }
   .speed select {
     height: 24px;
     padding: 0 4px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
-    background: var(--sl-surface-2);
-    color: var(--sl-text-muted);
-    font: var(--sl-text-sm) var(--sl-font-mono);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
+    background: var(--sg-surface-2);
+    color: var(--sg-text-muted);
+    font: var(--sg-text-sm) var(--sg-font-mono);
   }
   .rt {
     height: 24px;
     min-width: 34px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
     background: none;
-    color: var(--sl-text-muted);
-    font: 600 var(--sl-text-xs) var(--sl-font-mono);
+    color: var(--sg-text-muted);
+    font: 600 var(--sg-text-xs) var(--sg-font-mono);
     cursor: pointer;
   }
   .rt.on {
-    color: var(--sl-accent);
-    border-color: var(--sl-accent);
+    color: var(--sg-accent);
+    border-color: var(--sg-accent);
   }
   .stats {
     display: flex;
     flex-direction: column;
     min-width: 64px;
-    color: var(--sl-text-faint);
-    font: var(--sl-text-xs) var(--sl-font-mono);
+    color: var(--sg-text-faint);
+    font: var(--sg-text-xs) var(--sg-font-mono);
     line-height: 1.25;
     text-align: right;
   }
   .warn {
-    color: var(--sl-warn);
+    color: var(--sg-warn);
   }
   .compact {
     height: 40px;

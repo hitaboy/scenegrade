@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """
-scenelinear OCIO bake.
+scenegrade OCIO bake.
 
 Generates, from the official built-in ACES OCIO studio configs:
 

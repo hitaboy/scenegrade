@@ -5,20 +5,20 @@
 ```html
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@scenelinear/element/dist/scenelinear-player.js"
+  src="https://cdn.jsdelivr.net/npm/@scenegrade/element/dist/scenegrade-player.js"
 ></script>
 
-<scenelinear-player
+<scenegrade-player
   src="https://example.com/shot_010.mov"
   input-space="acescct"
   view="srgb-aces2-sdr709"
   layout="full"
   tools="zebra,falsecolor"
   style="height: 600px"
-></scenelinear-player>
+></scenegrade-player>
 ```
 
-Or with npm: `npm i @scenelinear/element`, then `import '@scenelinear/element'`. The LUT and WASM
+Or with npm: `npm i @scenegrade/element`, then `import '@scenegrade/element'`. The LUT and WASM
 files ship next to the bundle and are fetched on demand, so serve `dist/` as is.
 
 ### Attributes
@@ -43,7 +43,7 @@ files ship next to the bundle and are fetched on demand, so serve `dist/` as is.
 ### Methods and events
 
 ```js
-const el = document.querySelector('scenelinear-player');
+const el = document.querySelector('scenegrade-player');
 el.play(); el.pause(); el.seek(42); el.step(-1);
 el.setSettings({ exposure: 1, falseColor: 'stops', zebra: { high: true } });
 el.open({ url: '/plates/a.####.exr', first: 1001, last: 1100 });
@@ -66,10 +66,10 @@ el.undo(); el.redo();
 The UI uses neutral greys on purpose. Accent colour, fonts and sizes are CSS custom properties:
 
 ```css
-scenelinear-player {
-  --sl-accent: #7fb0ff;
-  --sl-font: 'Inter', sans-serif;
-  --sl-panel-w: 340px;
+scenegrade-player {
+  --sg-accent: #7fb0ff;
+  --sg-font: 'Inter', sans-serif;
+  --sg-panel-w: 340px;
 }
 ```
 
@@ -79,7 +79,7 @@ See [`packages/svelte/src/lib/tokens.css`](../packages/svelte/src/lib/tokens.css
 
 ```svelte
 <script>
-  import { ScenePlayer } from '@scenelinear/svelte';
+  import { ScenePlayer } from '@scenegrade/svelte';
   let ctl = $state();
 </script>
 
@@ -96,7 +96,7 @@ sharing one `PlayerController`.
 ## 3. Headless (React, Vue, plain JS…)
 
 ```ts
-import { Player } from '@scenelinear/core';
+import { Player } from '@scenegrade/core';
 
 const player = new Player();
 await player.attach(canvas); // any number of canvases
@@ -114,7 +114,7 @@ const px = await player.probe(x, y); // { scene, display, nits, stops, source }
 The colour module can be used without a player:
 
 ```ts
-import { color } from '@scenelinear/core';
+import { color } from '@scenegrade/core';
 const lut = await color.loadViewLut('srgb-aces2-sdr709');
 color.applyViewCPU(lut, color.inputToACEScg('arri-logc4', [0.4, 0.4, 0.4]));
 ```

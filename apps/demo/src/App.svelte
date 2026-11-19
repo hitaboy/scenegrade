@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { ScenePlayer, type PlayerController } from '@scenelinear/svelte';
-  import * as core from '@scenelinear/core';
+  import { ScenePlayer, type PlayerController } from '@scenegrade/svelte';
+  import * as core from '@scenegrade/core';
   import { SAMPLES } from './samples';
-  (globalThis as unknown as { scenelinearCore?: unknown }).scenelinearCore = core;
+  (globalThis as unknown as { scenegradeCore?: unknown }).scenegradeCore = core;
 
   let ctl = $state<PlayerController>();
   let current = $state('');
@@ -26,13 +26,13 @@
   });
   $effect(() => {
     // Handle for e2e tests and the console.
-    (globalThis as unknown as { scenelinear?: unknown }).scenelinear = ctl;
+    (globalThis as unknown as { scenegrade?: unknown }).scenegrade = ctl;
   });
 </script>
 
 <div class="page">
   <header>
-    <strong>scenelinear</strong>
+    <strong>scenegrade</strong>
     <span class="tag">ACES web player · WebGPU</span>
     <label>
       Sample
@@ -48,7 +48,7 @@
       </select>
     </label>
     <span class="grow"></span>
-    <a href="https://github.com/hitaboy/scenelinear" target="_blank" rel="noreferrer">GitHub</a>
+    <a href="https://github.com/hitaboy/scenegrade" target="_blank" rel="noreferrer">GitHub</a>
   </header>
   <main>
     <ScenePlayer bind:controller={ctl} onready={() => hash && open(hash)} />

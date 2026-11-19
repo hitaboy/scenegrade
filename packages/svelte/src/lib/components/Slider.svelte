@@ -131,8 +131,8 @@
     gap: 6px;
   }
   .lbl {
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
@@ -152,13 +152,13 @@
     top: 7px;
     height: 2px;
     border-radius: 1px;
-    background: var(--sl-surface-3);
+    background: var(--sg-surface-3);
   }
   .fill {
     position: absolute;
     top: 7px;
     height: 2px;
-    background: var(--sl-text-muted);
+    background: var(--sg-text-muted);
   }
   .thumb {
     position: absolute;
@@ -167,34 +167,34 @@
     height: 10px;
     margin-left: -5px;
     border-radius: 50%;
-    background: var(--sl-text);
-    box-shadow: 0 0 0 2px var(--sl-bg);
+    background: var(--sg-text);
+    box-shadow: 0 0 0 2px var(--sg-bg);
   }
   .track:focus-visible {
     outline: none;
   }
   .track:focus-visible .thumb {
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   .val {
     width: 52px;
     height: 20px;
     padding: 0 4px;
     border: 1px solid transparent;
-    border-radius: var(--sl-radius-sm);
+    border-radius: var(--sg-radius-sm);
     background: transparent;
-    color: var(--sl-text-muted);
-    font-family: var(--sl-font-mono);
-    font-size: var(--sl-text-sm);
+    color: var(--sg-text-muted);
+    font-family: var(--sg-font-mono);
+    font-size: var(--sg-text-sm);
     text-align: right;
     cursor: text;
   }
   .val.changed {
-    color: var(--sl-text);
+    color: var(--sg-text);
   }
   input.val {
-    border-color: var(--sl-border-strong);
-    background: var(--sl-surface-1);
-    color: var(--sl-text);
+    border-color: var(--sg-border-strong);
+    background: var(--sg-surface-1);
+    color: var(--sg-text);
   }
 </style>

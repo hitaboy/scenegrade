@@ -1,6 +1,6 @@
 <svelte:options
   customElement={{
-    tag: 'scenelinear-player',
+    tag: 'scenegrade-player',
     shadow: 'open',
     props: {
       src: { type: 'String', reflect: false },
@@ -25,8 +25,8 @@
 
 <script lang="ts">
   import { untrack } from 'svelte';
-  import { ScenePlayer, type PlayerController } from '@scenelinear/svelte';
-  import type { MediaInput, DisplaySettings, LoopMode, SetGradeOptions } from '@scenelinear/core';
+  import { ScenePlayer, type PlayerController } from '@scenegrade/svelte';
+  import type { MediaInput, DisplaySettings, LoopMode, SetGradeOptions } from '@scenegrade/core';
 
   let {
     src = '',

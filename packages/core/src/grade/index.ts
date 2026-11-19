@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// @scenelinear/core/grade — colour grading engine (data model, GPU interpreter, CPU reference).
+// @scenegrade/core/grade — colour grading engine (data model, GPU interpreter, CPU reference).
 export * from './model.js';
 export { CURVE_N, makeSpline, makePeriodicSpline, bakeCurve } from './curves.js';
 export {

@@ -8,13 +8,13 @@ async function setup(page: Page) {
     async () => !!(navigator.gpu && (await navigator.gpu.requestAdapter())),
   );
   test.skip(!gpu, 'WebGPU adapter not available in this browser');
-  await page.waitForFunction(() => (globalThis as any).scenelinear);
+  await page.waitForFunction(() => (globalThis as any).scenegrade);
 }
 
 /** Loads media through the demo's controller and waits for the first frame. */
 async function load(page: Page, input: unknown) {
   return page.evaluate(async (i) => {
-    const c = (globalThis as any).scenelinear;
+    const c = (globalThis as any).scenegrade;
     const info = await c.load(i);
     await new Promise((r) => setTimeout(r, 600));
     return { name: info.name, frames: info.frameCount, codec: info.codec, error: c.state.error };
@@ -26,8 +26,8 @@ test('EXR: decoded scene value and on-screen pixel match the OCIO reference', as
   const r = await load(page, `${base}exr/chart_zip.exr`);
   expect(r.error).toBeNull();
   const res = await page.evaluate(async () => {
-    const c = (globalThis as any).scenelinear;
-    const core = (globalThis as any).scenelinearCore;
+    const c = (globalThis as any).scenegrade;
+    const core = (globalThis as any).scenegradeCore;
     const p = c.player;
     p.zoomTo(1, { x: 0, y: 0 });
     p.panBy(-p.state.view.panX, -p.state.view.panY); // image pixel (x,y) == canvas pixel (x,y)
@@ -55,7 +55,7 @@ test('ProRes 422 HQ (ACEScct) decodes 10-bit and plays in real time', async ({ p
   const r = await load(page, `${base}video/chart_acescct_prores422hq.mov`);
   expect(r.codec).toBe('prores');
   const s = await page.evaluate(async () => {
-    const c = (globalThis as any).scenelinear;
+    const c = (globalThis as any).scenegrade;
     c.update({ inputSpace: 'acescct' });
     c.player.play();
     await new Promise((r) => setTimeout(r, 3000));
@@ -105,7 +105,7 @@ test('EXR sequence, multilayer and every compression load without errors', async
   const seq = await load(page, { url: `${base}exr/seq/chart.####.exr`, first: 1001, last: 1048 });
   expect(seq.frames).toBe(48);
   const ml = await page.evaluate(async (u) => {
-    const c = (globalThis as any).scenelinear;
+    const c = (globalThis as any).scenegrade;
     const info = await c.load(u);
     c.player.setLayer(info.layers[1].name);
     await new Promise((r) => setTimeout(r, 500));
@@ -121,7 +121,7 @@ test('scopes, overlays and compare render without WebGPU validation errors', asy
   await setup(page);
   await load(page, `${base}exr/nan_inf_half.exr`);
   const hist = await page.evaluate(async (b) => {
-    const c = (globalThis as any).scenelinear;
+    const c = (globalThis as any).scenegrade;
     c.update({
       falseColor: 'stops',
       zebra: { high: true, low: true },
@@ -138,7 +138,7 @@ test('scopes, overlays and compare render without WebGPU validation errors', asy
     return true;
   }, `${base}exr/chart_dwaa.exr`);
   expect(hist).toBe(true);
-  expect(errors.filter((e) => /WebGPU|GPUValidation|scenelinear/.test(e))).toEqual([]);
+  expect(errors.filter((e) => /WebGPU|GPUValidation|scenegrade/.test(e))).toEqual([]);
 });
 
 test('grade: on-screen pixel matches the CPU reference; undo restores the image', async ({
@@ -150,8 +150,8 @@ test('grade: on-screen pixel matches the CPU reference; undo restores the image'
   const r = await load(page, `${base}exr/chart_zip.exr`);
   expect(r.error).toBeNull();
   const res = await page.evaluate(async () => {
-    const c = (globalThis as any).scenelinear;
-    const core = (globalThis as any).scenelinearCore;
+    const c = (globalThis as any).scenegrade;
+    const core = (globalThis as any).scenegradeCore;
     const p = c.player;
     p.zoomTo(1, { x: 0, y: 0 });
     p.panBy(-p.state.view.panX, -p.state.view.panY);
@@ -212,7 +212,7 @@ test('grade panel: wheel, curve and node edits are undoable steps', async ({ pag
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await load(page, `${base}exr/chart_zip.exr`);
-  await page.locator('.sl-player').focus();
+  await page.locator('.sg-player').focus();
   await page.keyboard.press('e');
   const gain = page.getByRole('slider', { name: 'Gain colour balance' });
   await expect(gain).toBeVisible();
@@ -232,7 +232,7 @@ test('grade panel: wheel, curve and node edits are undoable steps', async ({ pag
   await page.mouse.up();
   await page.getByRole('button', { name: 'Add node after the selected one' }).click();
   const r = await page.evaluate(() => {
-    const p = (globalThis as any).scenelinear.player;
+    const p = (globalThis as any).scenegrade.player;
     const g = p.getGrade();
     const out = {
       nodes: g.nodes.length,
@@ -246,7 +246,7 @@ test('grade panel: wheel, curve and node edits are undoable steps', async ({ pag
     }
     return {
       ...out,
-      identity: (globalThis as any).scenelinearCore.grade.isIdentityGrade(p.getGrade()),
+      identity: (globalThis as any).scenegradeCore.grade.isIdentityGrade(p.getGrade()),
       after: p.getGrade().nodes.length,
     };
   });

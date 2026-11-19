@@ -1,5 +1,5 @@
 {
-  "name": "@scenelinear/demo",
+  "name": "@scenegrade/demo",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -11,8 +11,8 @@
     "e2e": "playwright test"
   },
   "dependencies": {
-    "@scenelinear/core": "workspace:*",
-    "@scenelinear/svelte": "workspace:*"
+    "@scenegrade/core": "workspace:*",
+    "@scenegrade/svelte": "workspace:*"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",

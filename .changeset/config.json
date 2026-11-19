@@ -2,10 +2,10 @@
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [["@scenelinear/core", "@scenelinear/exr-wasm", "@scenelinear/svelte", "@scenelinear/element"]],
+  "fixed": [["@scenegrade/core", "@scenegrade/exr-wasm", "@scenegrade/svelte", "@scenegrade/element"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@scenelinear/demo"]
+  "ignore": ["@scenegrade/demo"]
 }

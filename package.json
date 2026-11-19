@@ -1,5 +1,5 @@
 {
-  "name": "scenelinear-monorepo",
+  "name": "scenegrade-monorepo",
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
@@ -8,12 +8,12 @@
     "node": ">=20.19"
   },
   "scripts": {
-    "dev": "pnpm --filter @scenelinear/demo dev",
-    "build": "pnpm -r --filter ./packages/** run build && pnpm --filter @scenelinear/demo build",
+    "dev": "pnpm --filter @scenegrade/demo dev",
+    "build": "pnpm -r --filter ./packages/** run build && pnpm --filter @scenegrade/demo build",
     "test": "pnpm -r run test",
     "check": "pnpm -r run check",
     "format": "prettier --write .",
-    "e2e": "pnpm --filter @scenelinear/demo e2e",
+    "e2e": "pnpm --filter @scenegrade/demo e2e",
     "bake:luts": "uv run --python 3.12 --with opencolorio --with numpy python tools/ocio-bake/bake.py",
     "changeset": "changeset",
     "media": "uv run --python 3.12 --with OpenEXR --with numpy python tools/test-media/make_exr.py && uv run --python 3.12 --with OpenEXR --with numpy python tools/test-media/make_video.py"

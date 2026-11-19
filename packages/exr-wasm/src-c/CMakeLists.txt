@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Builds OpenEXRCore (+ vendored libdeflate and OpenJPH, fetched Imath headers)
-# and links the scenelinear wrapper into an ES module + .wasm with Emscripten.
+# and links the scenegrade wrapper into an ES module + .wasm with Emscripten.
 # Invoked by ../scripts/build-wasm.sh inside the emscripten/emsdk container.
 
 cmake_minimum_required(VERSION 3.16)
-project(scenelinear_exr_wasm C CXX)
+project(scenegrade_exr_wasm C CXX)
 
 set(OPENEXR_SOURCE_DIR "" CACHE PATH "Path to the OpenEXR source tree")
 if(NOT EXISTS "${OPENEXR_SOURCE_DIR}/src/lib/OpenEXRCore/openexr.h")

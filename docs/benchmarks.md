@@ -2,7 +2,7 @@
 
 These were measured on 2026-11-18 on an Apple M3 Pro MacBook Pro running macOS 26.5 and Chrome
 stable with WebGPU (Metal), with no COOP/COEP (`crossOriginIsolated = false`). The media are the
-generated test files (`pnpm media`). To reproduce, run `pnpm --filter @scenelinear/exr-wasm test`
+generated test files (`pnpm media`). To reproduce, run `pnpm --filter @scenegrade/exr-wasm test`
 for the decoder numbers, and use the demo's transport stats or `pnpm e2e` for playback.
 
 ## EXR decode (OpenEXR 3.4.9 → WASM, one worker, 1920×1080 RGBA half with grain)

@@ -23,10 +23,10 @@ importers:
 
   apps/demo:
     dependencies:
-      '@scenelinear/core':
+      '@scenegrade/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@scenelinear/svelte':
+      '@scenegrade/svelte':
         specifier: workspace:*
         version: link:../../packages/svelte
     devDependencies:
@@ -60,7 +60,7 @@ importers:
       '@mediabunny/prores':
         specifier: ^1.66.1
         version: 1.66.1(mediabunny@1.66.1)
-      '@scenelinear/exr-wasm':
+      '@scenegrade/exr-wasm':
         specifier: workspace:*
         version: link:../exr-wasm
       mediabunny:
@@ -82,10 +82,10 @@ importers:
 
   packages/element:
     devDependencies:
-      '@scenelinear/core':
+      '@scenegrade/core':
         specifier: workspace:*
         version: link:../core
-      '@scenelinear/svelte':
+      '@scenegrade/svelte':
         specifier: workspace:*
         version: link:../svelte
       '@sveltejs/vite-plugin-svelte':
@@ -127,7 +127,7 @@ importers:
 
   packages/svelte:
     dependencies:
-      '@scenelinear/core':
+      '@scenegrade/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:

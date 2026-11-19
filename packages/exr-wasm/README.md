@@ -1,4 +1,4 @@
-# @scenelinear/exr-wasm
+# @scenegrade/exr-wasm
 
 OpenEXR decoding for the browser (and Node): the official **OpenEXRCore** C library
 (OpenEXR **3.4.9**) compiled to WebAssembly with Emscripten, a small TypeScript API and a
@@ -20,7 +20,7 @@ Web Worker pool.
 ## Usage
 
 ```ts
-import { createExrDecoder, ExrWorkerPool } from '@scenelinear/exr-wasm';
+import { createExrDecoder, ExrWorkerPool } from '@scenegrade/exr-wasm';
 
 // synchronous decoder (main thread, worker or Node)
 const dec = await createExrDecoder();
@@ -71,7 +71,7 @@ CLEAN=1 packages/exr-wasm/scripts/build-wasm.sh  # from scratch (re-clones OpenE
 
 ```sh
 uv run --python 3.12 --with OpenEXR --with numpy python tools/test-media/make_exr.py
-pnpm --filter @scenelinear/exr-wasm test
+pnpm --filter @scenegrade/exr-wasm test
 ```
 
 The generator writes synthetic ACEScg images to `apps/demo/public/media/generated/exr/`

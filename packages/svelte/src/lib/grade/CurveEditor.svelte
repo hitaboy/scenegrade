@@ -7,7 +7,7 @@
    * kind 'periodic' : hue on x (wraps), delta on y with a neutral line at 0.
    * kind 'delta'    : x in [0, 1], delta on y.
    */
-  import { grade as G } from '@scenelinear/core';
+  import { grade as G } from '@scenegrade/core';
 
   type Pts = [number, number][];
   let {
@@ -15,7 +15,7 @@
     kind,
     yMin = 0,
     yMax = 1,
-    stroke = 'var(--sl-text)',
+    stroke = 'var(--sg-text)',
     background = 'none',
     label,
     onchange,
@@ -236,8 +236,8 @@
     width: 100%;
     height: 100%;
     min-height: 120px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
     background-color: #141414;
     background-size: 100% 4px;
     background-repeat: no-repeat;
@@ -252,7 +252,7 @@
   }
   svg:focus-visible {
     outline: none;
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   .grid {
     stroke: #262626;
@@ -268,11 +268,11 @@
     stroke-width: 1.5;
   }
   .pt {
-    fill: var(--sl-bg);
-    stroke: var(--sl-text);
+    fill: var(--sg-bg);
+    stroke: var(--sg-text);
     stroke-width: 1.5;
   }
   .pt.sel {
-    fill: var(--sl-text);
+    fill: var(--sg-text);
   }
 </style>

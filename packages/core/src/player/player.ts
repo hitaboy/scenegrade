@@ -642,7 +642,7 @@ export class Player {
       })
       .catch((e) => {
         if ((e as Error).name !== 'AbortError' && token === this.loadToken) {
-          console.warn(`[scenelinear] frame ${i} failed:`, e);
+          console.warn(`[scenegrade] frame ${i} failed:`, e);
           if (i === this.state.frame)
             this.set({ error: `Frame ${i}: ${(e as Error).message ?? e}` });
         }

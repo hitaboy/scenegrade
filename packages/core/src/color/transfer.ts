@@ -135,7 +135,7 @@ const v3 = (v: Vec3) => `vec3f(${wf(v[0])}, ${wf(v[1])}, ${wf(v[2])})`;
  * unadapted ACES matrix (its middle row = ACEScg luminance weights, used by sl_luma_ap1).
  */
 export const COMMON_WGSL = /* wgsl */ `
-// ---- scenelinear common colour library (constants from OpenColorIO, see generated.ts) ----
+// ---- scenegrade common colour library (constants from OpenColorIO, see generated.ts) ----
 ${Object.entries(M)
   .map(([k, m]) => `const ${k} = ${wgslMat3(m)};`)
   .join('\n')}

@@ -46,25 +46,25 @@
     height: 28px;
     padding: 0 6px;
     border: 1px solid transparent;
-    border-radius: var(--sl-radius);
+    border-radius: var(--sg-radius);
     background: transparent;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     font: inherit;
-    font-size: var(--sl-text-sm);
+    font-size: var(--sg-text-sm);
     cursor: pointer;
   }
   .ib:hover:not(:disabled) {
-    background: var(--sl-surface-3);
-    color: var(--sl-text);
+    background: var(--sg-surface-3);
+    color: var(--sg-text);
   }
   .ib:focus-visible {
     outline: none;
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   .ib.active {
-    background: var(--sl-accent-weak);
-    border-color: color-mix(in srgb, var(--sl-accent) 40%, transparent);
-    color: var(--sl-accent);
+    background: var(--sg-accent-weak);
+    border-color: color-mix(in srgb, var(--sg-accent) 40%, transparent);
+    color: var(--sg-accent);
   }
   .ib:disabled {
     opacity: 0.4;

@@ -74,7 +74,7 @@ export class AudioPlayer {
             await new Promise((r) => setTimeout(r, 100));
         }
       } catch (e) {
-        if (run === this.run) console.warn('[scenelinear] audio stopped:', e);
+        if (run === this.run) console.warn('[scenegrade] audio stopped:', e);
       }
     })();
   }

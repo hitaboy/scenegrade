@@ -92,8 +92,8 @@
   }
   .tl:focus-visible {
     outline: none;
-    box-shadow: var(--sl-focus);
-    border-radius: var(--sl-radius-sm);
+    box-shadow: var(--sg-focus);
+    border-radius: var(--sg-radius-sm);
   }
   .track {
     position: absolute;
@@ -102,15 +102,15 @@
     top: 10px;
     height: 6px;
     border-radius: 2px;
-    background: var(--sl-surface-3);
+    background: var(--sg-surface-3);
   }
   .inout {
     position: absolute;
     top: 6px;
     height: 14px;
-    background: var(--sl-inout);
-    border-left: 1px solid var(--sl-accent);
-    border-right: 1px solid var(--sl-accent);
+    background: var(--sg-inout);
+    border-left: 1px solid var(--sg-accent);
+    border-right: 1px solid var(--sg-accent);
   }
   .cache {
     position: absolute;
@@ -123,22 +123,22 @@
     position: absolute;
     top: 0;
     height: 2px;
-    background: var(--sl-cache);
+    background: var(--sg-cache);
   }
   .tick {
     position: absolute;
     top: 20px;
     width: 1px;
     height: 4px;
-    background: var(--sl-border-strong);
+    background: var(--sg-border-strong);
   }
   .tick i,
   .hover i {
     position: absolute;
     top: 3px;
     transform: translateX(-50%);
-    color: var(--sl-text-faint);
-    font: normal 9px var(--sl-font-mono);
+    color: var(--sg-text-faint);
+    font: normal 9px var(--sg-font-mono);
     white-space: nowrap;
   }
   .tick:first-of-type i {
@@ -149,13 +149,13 @@
     top: 4px;
     width: 1px;
     height: 18px;
-    background: var(--sl-text-faint);
+    background: var(--sg-text-faint);
   }
   .hover i {
     top: -2px;
     left: 4px;
     transform: none;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
   }
   .head {
     position: absolute;
@@ -163,7 +163,7 @@
     width: 2px;
     height: 20px;
     margin-left: -1px;
-    background: var(--sl-playhead);
+    background: var(--sg-playhead);
     border-radius: 1px;
     box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
   }

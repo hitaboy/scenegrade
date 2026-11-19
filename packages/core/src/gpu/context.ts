@@ -71,7 +71,7 @@ async function createContext(): Promise<GpuContext> {
     for (const fn of lostListeners) fn(info);
   });
   device.addEventListener('uncapturederror', (ev) => {
-    console.error('[scenelinear] WebGPU error:', (ev as GPUUncapturedErrorEvent).error.message);
+    console.error('[scenegrade] WebGPU error:', (ev as GPUUncapturedErrorEvent).error.message);
   });
 
   const info = adapter.info;

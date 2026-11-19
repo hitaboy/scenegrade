@@ -1,13 +1,13 @@
 {
-  "name": "@scenelinear/element",
+  "name": "@scenegrade/element",
   "version": "0.1.0",
-  "description": "<scenelinear-player>: drop-in Web Component for ACES-managed playback of EXR, ProRes and video, with scopes, false colour and zebra.",
+  "description": "<scenegrade-player>: drop-in Web Component for colour grading and ACES-managed review of EXR, ProRes and video, with scopes, false colour and zebra.",
   "license": "Apache-2.0",
   "type": "module",
-  "main": "./dist/scenelinear-player.js",
-  "module": "./dist/scenelinear-player.js",
+  "main": "./dist/scenegrade-player.js",
+  "module": "./dist/scenegrade-player.js",
   "exports": {
-    ".": "./dist/scenelinear-player.js"
+    ".": "./dist/scenegrade-player.js"
   },
   "files": [
     "dist",
@@ -18,8 +18,8 @@
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
-    "@scenelinear/core": "workspace:*",
-    "@scenelinear/svelte": "workspace:*",
+    "@scenegrade/core": "workspace:*",
+    "@scenegrade/svelte": "workspace:*",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@types/node": "^22",
     "@webgpu/types": "^0.1.74",

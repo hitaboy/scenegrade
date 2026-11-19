@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: Apache-2.0
  *
- * scenelinear exr-wasm: a thin C wrapper over the OpenEXRCore API, compiled
+ * scenegrade exr-wasm: a thin C wrapper over the OpenEXRCore API, compiled
  * to WebAssembly with Emscripten.
  *
  * Exposed API (all functions are prefixed with `exrw_`):

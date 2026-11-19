@@ -103,8 +103,8 @@
 <style>
   .seg {
     display: inline-flex;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
     overflow: hidden;
   }
   .seg button {
@@ -112,17 +112,17 @@
     padding: 0 7px;
     border: 0;
     background: none;
-    color: var(--sl-text-faint);
+    color: var(--sg-text-faint);
     font: inherit;
-    font-size: var(--sl-text-xs);
+    font-size: var(--sg-text-xs);
     cursor: pointer;
   }
   .seg button + button {
-    border-left: 1px solid var(--sl-border);
+    border-left: 1px solid var(--sg-border);
   }
   .seg button.on {
-    background: var(--sl-surface-3);
-    color: var(--sl-text);
+    background: var(--sg-surface-3);
+    color: var(--sg-text);
   }
   .foot {
     padding: 8px 10px;

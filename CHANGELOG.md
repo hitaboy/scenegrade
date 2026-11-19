@@ -8,4 +8,4 @@ each `packages/*/CHANGELOG.md`.
 First public version: WebGPU renderer, ACES 2.0 view transforms (baked from OCIO 2.6), 27 input
 spaces, OpenEXR WASM decoder (all compressions incl. HTJ2K), ProRes via TurboRes, WebCodecs video,
 histogram / waveform / parade / vectorscope, false colour, zebra, clipping/NaN, peaking, pixel
-probe, A/B compare, `<scenelinear-player>` Web Component and Svelte 5 components.
+probe, A/B compare, `<scenegrade-player>` Web Component and Svelte 5 components.

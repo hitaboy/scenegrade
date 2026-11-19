@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte';
-  import type { MediaInput, PlayerOptions, Player } from '@scenelinear/core';
+  import type { MediaInput, PlayerOptions, Player } from '@scenegrade/core';
   import { PlayerController } from '../controller.svelte.js';
   import { handleKey } from '../shortcuts.js';
   import Viewer from './Viewer.svelte';
@@ -64,9 +64,9 @@
     // Design tokens: inject once per root (document head, or the shadow root of the web component).
     const rootNode = root.getRootNode() as Document | ShadowRoot;
     const host = rootNode instanceof ShadowRoot ? rootNode : document.head;
-    if (!host.querySelector('style[data-scenelinear-tokens]')) {
+    if (!host.querySelector('style[data-scenegrade-tokens]')) {
       const st = document.createElement('style');
-      st.dataset.scenelinearTokens = '';
+      st.dataset.scenegradeTokens = '';
       st.textContent = tokens;
       host.prepend(st);
     }
@@ -140,14 +140,14 @@
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 <div
-  class="sl-player"
+  class="sg-player"
   class:compact={layout === 'compact'}
   class:clean={ctl.ui.clean}
   class:drag={dragOver}
   bind:this={root}
   tabindex="0"
   role="application"
-  aria-label="scenelinear media player"
+  aria-label="scenegrade media player"
   onkeydown={keydown}
   ondragover={(e) => {
     if (!allowDrop) return;
@@ -308,7 +308,7 @@
 </div>
 
 <style>
-  .sl-player {
+  .sg-player {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -316,16 +316,16 @@
     height: 100%;
     min-height: 240px;
     overflow: hidden;
-    background: var(--sl-bg);
-    color: var(--sl-text);
-    font-family: var(--sl-font);
-    font-size: var(--sl-text-md);
+    background: var(--sg-bg);
+    color: var(--sg-text);
+    font-family: var(--sg-font);
+    font-size: var(--sg-text-md);
     -webkit-font-smoothing: antialiased;
     outline: none;
     user-select: none;
   }
-  .sl-player:focus-visible {
-    box-shadow: inset 0 0 0 1px var(--sl-accent);
+  .sg-player:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--sg-accent);
   }
   .main {
     position: relative;
@@ -342,9 +342,9 @@
   .panel {
     display: flex;
     flex-direction: column;
-    width: var(--sl-panel-w);
-    border-left: 1px solid var(--sl-border);
-    background: var(--sl-surface-1);
+    width: var(--sg-panel-w);
+    border-left: 1px solid var(--sg-border);
+    background: var(--sg-surface-1);
   }
   .tabs {
     display: flex;
@@ -352,7 +352,7 @@
     gap: 2px;
     height: 34px;
     padding: 0 4px;
-    border-bottom: 1px solid var(--sl-border);
+    border-bottom: 1px solid var(--sg-border);
   }
   .tabs button[role='tab'] {
     display: inline-flex;
@@ -361,20 +361,20 @@
     height: 26px;
     padding: 0 8px;
     border: 0;
-    border-radius: var(--sl-radius-sm);
+    border-radius: var(--sg-radius-sm);
     background: none;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     font: inherit;
-    font-size: var(--sl-text-sm);
+    font-size: var(--sg-text-sm);
     cursor: pointer;
   }
   .tabs button.on {
-    background: var(--sl-surface-3);
-    color: var(--sl-text);
+    background: var(--sg-surface-3);
+    color: var(--sg-text);
   }
   .tabs button:focus-visible {
     outline: none;
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   .grow {
     flex: 1;
@@ -392,10 +392,10 @@
     place-items: center;
     width: 28px;
     height: 28px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius);
-    background: var(--sl-surface-1);
-    color: var(--sl-text-muted);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius);
+    background: var(--sg-surface-1);
+    color: var(--sg-text-muted);
     cursor: pointer;
   }
   .empty {
@@ -406,7 +406,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     text-align: center;
     pointer-events: none;
   }
@@ -414,26 +414,26 @@
     margin: 0;
   }
   .empty .title {
-    color: var(--sl-text);
-    font-size: var(--sl-text-lg);
+    color: var(--sg-text);
+    font-size: var(--sg-text-lg);
   }
   .dim {
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-sm);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-sm);
   }
   .open {
     margin-top: 8px;
     padding: 6px 14px;
-    border: 1px solid var(--sl-border-strong);
-    border-radius: var(--sl-radius);
-    background: var(--sl-surface-2);
-    color: var(--sl-text);
+    border: 1px solid var(--sg-border-strong);
+    border-radius: var(--sg-radius);
+    background: var(--sg-surface-2);
+    color: var(--sg-text);
     font: inherit;
     cursor: pointer;
     pointer-events: auto;
   }
   .open:hover {
-    background: var(--sl-surface-3);
+    background: var(--sg-surface-3);
   }
   .error {
     position: absolute;
@@ -446,16 +446,16 @@
     align-items: center;
     max-width: 80%;
     padding: 6px 10px;
-    border: 1px solid var(--sl-danger);
-    border-radius: var(--sl-radius);
-    background: var(--sl-surface-1);
-    color: var(--sl-text);
-    font-size: var(--sl-text-sm);
+    border: 1px solid var(--sg-danger);
+    border-radius: var(--sg-radius);
+    background: var(--sg-surface-1);
+    color: var(--sg-text);
+    font-size: var(--sg-text-sm);
   }
   .error button {
     border: 0;
     background: none;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     font-size: 16px;
     cursor: pointer;
   }
@@ -469,14 +469,14 @@
     align-items: center;
     gap: 2px;
     padding: 3px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius);
-    background: color-mix(in srgb, var(--sl-surface-1) 92%, transparent);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius);
+    background: color-mix(in srgb, var(--sg-surface-1) 92%, transparent);
   }
   .cmp .ab {
     padding: 0 8px;
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-xs);
     max-width: 280px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -486,17 +486,17 @@
     height: 22px;
     padding: 0 8px;
     border: 0;
-    border-radius: var(--sl-radius-sm);
+    border-radius: var(--sg-radius-sm);
     background: none;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     font: inherit;
-    font-size: var(--sl-text-xs);
+    font-size: var(--sg-text-xs);
     text-transform: capitalize;
     cursor: pointer;
   }
   .cmp button.on {
-    background: var(--sl-surface-3);
-    color: var(--sl-text);
+    background: var(--sg-surface-3);
+    color: var(--sg-text);
   }
   .dropzone {
     position: absolute;
@@ -504,11 +504,11 @@
     z-index: 8;
     display: grid;
     place-items: center;
-    border: 2px dashed var(--sl-accent);
+    border: 2px dashed var(--sg-accent);
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.45);
-    color: var(--sl-text);
-    font-size: var(--sl-text-lg);
+    color: var(--sg-text);
+    font-size: var(--sg-text-lg);
     pointer-events: none;
   }
   .quick {
@@ -516,8 +516,8 @@
     right: 6px;
     top: 6px;
     z-index: 4;
-    border-radius: var(--sl-radius);
-    background: color-mix(in srgb, var(--sl-surface-1) 85%, transparent);
+    border-radius: var(--sg-radius);
+    background: color-mix(in srgb, var(--sg-surface-1) 85%, transparent);
   }
   .popover {
     position: absolute;
@@ -529,9 +529,9 @@
     flex-direction: column;
     width: min(360px, calc(100% - 12px));
     overflow: auto;
-    border: 1px solid var(--sl-border-strong);
-    border-radius: var(--sl-radius);
-    background: var(--sl-surface-1);
+    border: 1px solid var(--sg-border-strong);
+    border-radius: var(--sg-radius);
+    background: var(--sg-surface-1);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
   }
   .pop-tools :global(.rail) {
@@ -539,7 +539,7 @@
     flex-wrap: wrap;
     width: auto;
     border-right: 0;
-    border-bottom: 1px solid var(--sl-border);
+    border-bottom: 1px solid var(--sg-border);
   }
   .pop-tools :global(.rail .grow),
   .pop-tools :global(.rail .sep) {
@@ -552,7 +552,7 @@
       top: 0;
       bottom: 0;
       z-index: 6;
-      width: min(var(--sl-panel-w), 85%);
+      width: min(var(--sg-panel-w), 85%);
       box-shadow: -8px 0 30px rgba(0, 0, 0, 0.5);
     }
   }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //
-// @scenelinear/exr-wasm — OpenEXR (OpenEXRCore) decoding in WebAssembly.
+// @scenegrade/exr-wasm — OpenEXR (OpenEXRCore) decoding in WebAssembly.
 
 export type {
   Box2,

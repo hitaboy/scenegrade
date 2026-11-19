@@ -21,8 +21,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: var(--sl-text-muted);
-    font-size: var(--sl-text-sm);
+    color: var(--sg-text-muted);
+    font-size: var(--sg-text-sm);
     cursor: pointer;
     user-select: none;
   }
@@ -36,7 +36,7 @@
     width: 24px;
     height: 14px;
     border-radius: 7px;
-    background: var(--sl-surface-3);
+    background: var(--sg-surface-3);
     position: relative;
     transition: background 0.12s;
   }
@@ -48,17 +48,17 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--sl-text-muted);
+    background: var(--sg-text-muted);
     transition: transform 0.12s;
   }
   input:checked + .box {
-    background: color-mix(in srgb, var(--sl-accent) 55%, var(--sl-surface-3));
+    background: color-mix(in srgb, var(--sg-accent) 55%, var(--sg-surface-3));
   }
   input:checked + .box::after {
     transform: translateX(10px);
-    background: var(--sl-text);
+    background: var(--sg-text);
   }
   input:focus-visible + .box {
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
 </style>

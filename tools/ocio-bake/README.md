@@ -1,6 +1,6 @@
 # ocio-bake
 
-Offline bake of the scenelinear colour pipeline from the official built-in ACES OpenColorIO
+Offline bake of the scenegrade colour pipeline from the official built-in ACES OpenColorIO
 configs. The browser never runs OCIO: input transforms are analytic (TS + WGSL generated from
 the op chains OCIO itself uses) and ACES view transforms are 3D LUTs.
 
@@ -25,7 +25,7 @@ Outputs:
 | `tools/ocio-bake/fixtures/views.json` | ~550 ACEScg samples per view (grey ramp −14…+12 stops, AP1/Rec.709 primaries & secondaries, skin, up to 65504, negatives, random) + OCIO display signal; Un-tone-mapped, display decoding and ASC CDL references |
 
 The script also checks its own Python reimplementation of every input chain and display
-decode against OCIO and prints the max error. Then run `pnpm --filter @scenelinear/core test`.
+decode against OCIO and prints the max error. Then run `pnpm --filter @scenegrade/core test`.
 
 Optional GPU check (compiles all WGSL with Dawn and compares GPU vs CPU, incl. LUT sampling):
 `cd "$(mktemp -d)" && npm i webgpu tsx && npx tsx <repo>/tools/ocio-bake/gpu-check.mts`.
@@ -92,7 +92,7 @@ AP0 ≥ 0 clamp, Canon [0, 1]). Note OCIO's ACEScc does not apply the 65504 cap.
   BSD-3-Clause licence (<https://github.com/AcademySoftwareFoundation/OpenColorIO-Config-ACES>).
   The LUTs here are derived works (sampled evaluations) of those transforms; keep this notice
   when redistributing them. "ACES" is a trademark of the Academy (A.M.P.A.S.); use of the name
-  for products requires following the Academy's logo/trademark programme. scenelinear is not
+  for products requires following the Academy's logo/trademark programme. scenegrade is not
   endorsed by or affiliated with the Academy.
 - **OpenColorIO**: © Contributors to the OpenColorIO Project, BSD-3-Clause. Used only at bake
   time; no OCIO code ships in the player.

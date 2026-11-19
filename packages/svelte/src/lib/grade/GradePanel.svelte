@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { grade as G, type Grade } from '@scenelinear/core';
+  import { grade as G, type Grade } from '@scenegrade/core';
   import type { PlayerController } from '../controller.svelte.js';
   import Slider from '../components/Slider.svelte';
   import Toggle from '../components/Toggle.svelte';
@@ -135,7 +135,7 @@
 
   // ---- curves -----------------------------------------------------------------------------
   let curveCh = $state<'y' | 'r' | 'g' | 'b'>('y');
-  const chColor = { y: 'var(--sl-text)', r: '#d07a7a', g: '#7ac08a', b: '#7a9ad8' } as const;
+  const chColor = { y: 'var(--sg-text)', r: '#d07a7a', g: '#7ac08a', b: '#7a9ad8' } as const;
   type H = 'hueHue' | 'hueSat' | 'hueLum' | 'lumSat' | 'satSat';
   let hsl = $state<H>('hueSat');
   const hslDefs: Record<
@@ -676,10 +676,10 @@
   .gp {
     display: flex;
     flex-direction: column;
-    height: var(--sl-grade-h, 300px);
-    border-top: 1px solid var(--sl-border);
-    background: var(--sl-surface-1);
-    font-size: var(--sl-text-sm);
+    height: var(--sg-grade-h, 300px);
+    border-top: 1px solid var(--sg-border);
+    background: var(--sg-surface-1);
+    font-size: var(--sg-text-sm);
   }
   .bar {
     display: flex;
@@ -687,7 +687,7 @@
     gap: 10px;
     min-height: 34px;
     padding: 0 6px;
-    border-bottom: 1px solid var(--sl-border);
+    border-bottom: 1px solid var(--sg-border);
     overflow-x: auto;
   }
   .nodes,
@@ -706,16 +706,16 @@
     gap: 5px;
     height: 24px;
     padding: 0 8px 0 6px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
-    background: var(--sl-surface-2);
-    color: var(--sl-text-muted);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
+    background: var(--sg-surface-2);
+    color: var(--sg-text-muted);
     white-space: nowrap;
     cursor: pointer;
   }
   .node.on {
-    border-color: var(--sl-accent);
-    color: var(--sl-text);
+    border-color: var(--sg-accent);
+    color: var(--sg-text);
   }
   .node.off .name {
     text-decoration: line-through;
@@ -723,15 +723,15 @@
   }
   .node:focus-visible {
     outline: none;
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   .dot {
     width: 10px;
     height: 10px;
     padding: 0;
-    border: 1px solid var(--sl-text-muted);
+    border: 1px solid var(--sg-text-muted);
     border-radius: 50%;
-    background: var(--sl-accent);
+    background: var(--sg-accent);
     cursor: pointer;
   }
   .dot.dim {
@@ -741,25 +741,25 @@
     width: 90px;
     height: 18px;
     padding: 0 4px;
-    border: 1px solid var(--sl-border-strong);
+    border: 1px solid var(--sg-border-strong);
     border-radius: 2px;
-    background: var(--sl-surface-1);
-    color: var(--sl-text);
+    background: var(--sg-surface-1);
+    color: var(--sg-text);
     font: inherit;
   }
   .num {
-    color: var(--sl-text-faint);
-    font-family: var(--sl-font-mono);
+    color: var(--sg-text-faint);
+    font-family: var(--sg-font-mono);
   }
   .mod {
-    color: var(--sl-accent);
+    color: var(--sg-accent);
   }
   .grow {
     flex: 1;
   }
   .err {
     padding: 4px 10px;
-    color: var(--sl-danger);
+    color: var(--sg-danger);
   }
   .body {
     display: flex;
@@ -772,28 +772,28 @@
     gap: 2px;
     width: 96px;
     padding: 6px 4px;
-    border-right: 1px solid var(--sl-border);
+    border-right: 1px solid var(--sg-border);
   }
   .tabs button {
     height: 26px;
     padding: 0 8px;
     border: 0;
-    border-radius: var(--sl-radius-sm);
+    border-radius: var(--sg-radius-sm);
     background: none;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     font: inherit;
     text-align: left;
     cursor: pointer;
   }
   .tabs button.on {
-    background: var(--sl-surface-3);
-    color: var(--sl-text);
+    background: var(--sg-surface-3);
+    color: var(--sg-text);
   }
   .tabs button:focus-visible,
   .seg button:focus-visible,
   .txt:focus-visible {
     outline: none;
-    box-shadow: var(--sl-focus);
+    box-shadow: var(--sg-focus);
   }
   .content {
     flex: 1;
@@ -844,10 +844,10 @@
     flex: 1;
     height: 24px;
     padding: 0 8px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
     background: none;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
     font: inherit;
     text-align: left;
     cursor: pointer;
@@ -857,34 +857,34 @@
     font-weight: 600;
   }
   .seg button.on {
-    background: var(--sl-surface-3);
-    color: var(--sl-text);
+    background: var(--sg-surface-3);
+    color: var(--sg-text);
   }
   .txt {
     align-self: flex-start;
     padding: 3px 8px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
-    background: var(--sl-surface-2);
-    color: var(--sl-text-muted);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
+    background: var(--sg-surface-2);
+    color: var(--sg-text-muted);
     font: inherit;
     cursor: pointer;
   }
   .txt:hover {
-    color: var(--sl-text);
+    color: var(--sg-text);
   }
   .hint {
     margin: 0;
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-xs);
     line-height: 1.4;
   }
   .mono {
-    font-family: var(--sl-font-mono);
+    font-family: var(--sg-font-mono);
   }
   .h {
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-xs);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -899,21 +899,21 @@
     grid-template-columns: 48px repeat(3, 64px);
     gap: 4px;
     align-items: center;
-    font-size: var(--sl-text-xs);
+    font-size: var(--sg-text-xs);
   }
   .grid3 input {
     width: 64px;
     height: 22px;
     padding: 0 4px;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
-    background: var(--sl-surface-2);
-    color: var(--sl-text);
-    font: var(--sl-text-sm) var(--sl-font-mono);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
+    background: var(--sg-surface-2);
+    color: var(--sg-text);
+    font: var(--sg-text-sm) var(--sg-font-mono);
     text-align: right;
   }
   .lab {
-    color: var(--sl-text-faint);
+    color: var(--sg-text-faint);
   }
   .r {
     color: #c98a8a;
@@ -945,7 +945,7 @@
     display: flex;
     flex-direction: column;
     width: 150px;
-    border-left: 1px solid var(--sl-border);
+    border-left: 1px solid var(--sg-border);
   }
   .sh {
     display: flex;
@@ -953,8 +953,8 @@
     justify-content: space-between;
     height: 30px;
     padding: 0 4px 0 10px;
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-xs);
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -973,13 +973,13 @@
     display: block;
     width: 100%;
     padding: 0;
-    border: 1px solid var(--sl-border);
-    border-radius: var(--sl-radius-sm);
+    border: 1px solid var(--sg-border);
+    border-radius: var(--sg-radius-sm);
     background: #000;
     cursor: pointer;
   }
   .thumb:hover {
-    border-color: var(--sl-accent);
+    border-color: var(--sg-accent);
   }
   .thumb img {
     display: block;
@@ -993,9 +993,9 @@
     height: 18px;
     padding: 0;
     border: 0;
-    border-radius: var(--sl-radius-sm);
+    border-radius: var(--sg-radius-sm);
     background: rgba(0, 0, 0, 0.6);
-    color: var(--sl-text);
+    color: var(--sg-text);
     cursor: pointer;
     opacity: 0;
   }
@@ -1010,8 +1010,8 @@
     padding: 0 3px;
     border-radius: 2px;
     background: rgba(0, 0, 0, 0.6);
-    color: var(--sl-text-muted);
-    font: var(--sl-text-xs) var(--sl-font-mono);
+    color: var(--sg-text-muted);
+    font: var(--sg-text-xs) var(--sg-font-mono);
   }
   @media (max-width: 900px) {
     .stills {

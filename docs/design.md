@@ -8,7 +8,7 @@
    perceived (simultaneous contrast). The single accent, a desaturated blue, marks state only: the
    active tool, toggles and in/out points.
 2. **The image comes first.** Panels collapse, `Tab` hides all chrome ("clean" view), and the
-   viewer background is a dark neutral (`--sl-viewer-bg`).
+   viewer background is a dark neutral (`--sg-viewer-bg`).
 3. **Keyboard first,** with RV- and Resolve-like shortcuts (`?` shows them all). Every control is
    also reachable with the mouse and has a visible focus ring.
 4. **Numbers you can trust.** Mono font for values; pixel probe values come from the GPU scene
@@ -56,16 +56,16 @@ hides its stats.
 
 | Token                             | Value                             | Use                      |
 | --------------------------------- | --------------------------------- | ------------------------ |
-| `--sl-bg`                         | `#161616`                         | app background           |
-| `--sl-viewer-bg`                  | `#1c1c1c`                         | viewer, around the image |
-| `--sl-surface-1/2/3`              | `#1f1f1f` / `#262626` / `#303030` | bars, controls, hover    |
-| `--sl-border` / `-strong`         | `#3a3a3a` / `#4a4a4a`             | separators, inputs       |
-| `--sl-text` / `-muted` / `-faint` | `#d6d6d6` / `#9a9a9a` / `#6e6e6e` | text hierarchy           |
-| `--sl-accent`                     | `#8fb3e8`                         | active state only        |
-| `--sl-warn` / `--sl-danger`       | `#e0b45a` / `#e06a5a`             | dropped frames, errors   |
-| `--sl-font`, `--sl-font-mono`     | system UI / UI mono               |                          |
-| `--sl-text-xs…lg`                 | 10–13 px                          | dense, tool-like         |
-| `--sl-radius`                     | 4 px                              |                          |
+| `--sg-bg`                         | `#161616`                         | app background           |
+| `--sg-viewer-bg`                  | `#1c1c1c`                         | viewer, around the image |
+| `--sg-surface-1/2/3`              | `#1f1f1f` / `#262626` / `#303030` | bars, controls, hover    |
+| `--sg-border` / `-strong`         | `#3a3a3a` / `#4a4a4a`             | separators, inputs       |
+| `--sg-text` / `-muted` / `-faint` | `#d6d6d6` / `#9a9a9a` / `#6e6e6e` | text hierarchy           |
+| `--sg-accent`                     | `#8fb3e8`                         | active state only        |
+| `--sg-warn` / `--sg-danger`       | `#e0b45a` / `#e06a5a`             | dropped frames, errors   |
+| `--sg-font`, `--sg-font-mono`     | system UI / UI mono               |                          |
+| `--sg-text-xs…lg`                 | 10–13 px                          | dense, tool-like         |
+| `--sg-radius`                     | 4 px                              |                          |
 
 ## Analysis overlays
 

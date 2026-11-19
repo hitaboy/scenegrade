@@ -189,7 +189,7 @@
     min-width: 0;
     min-height: 0;
     overflow: hidden;
-    background: var(--sl-viewer-bg);
+    background: var(--sg-viewer-bg);
     cursor: grab;
     touch-action: none;
   }
@@ -223,14 +223,14 @@
     fill: rgba(0, 0, 0, 0.82);
   }
   .handle {
-    fill: var(--sl-bg);
+    fill: var(--sg-bg);
     stroke: #fff;
     stroke-width: 1.5;
   }
   .ab,
   .pinl {
     fill: #fff;
-    font: 600 11px var(--sl-font);
+    font: 600 11px var(--sg-font);
     paint-order: stroke;
     stroke: rgba(0, 0, 0, 0.7);
     stroke-width: 3px;
@@ -245,16 +245,16 @@
     inset: 0;
     display: grid;
     place-items: center;
-    color: var(--sl-text-muted);
-    font-size: var(--sl-text-md);
+    color: var(--sg-text-muted);
+    font-size: var(--sg-text-md);
     pointer-events: none;
   }
   .zoom {
     position: absolute;
     right: 8px;
     bottom: 6px;
-    color: var(--sl-text-faint);
-    font: var(--sl-text-xs) var(--sl-font-mono);
+    color: var(--sg-text-faint);
+    font: var(--sg-text-xs) var(--sg-font-mono);
     pointer-events: none;
   }
 </style>

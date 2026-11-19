@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { color } from '@scenelinear/core';
+  import { color } from '@scenegrade/core';
   import type { PlayerController } from '../controller.svelte.js';
   import Select, { type Option } from './Select.svelte';
   import Slider from './Slider.svelte';
@@ -131,8 +131,8 @@
     gap: 6px 16px;
     min-height: 40px;
     padding: 6px 8px;
-    border-bottom: 1px solid var(--sl-border);
-    background: var(--sl-surface-1);
+    border-bottom: 1px solid var(--sg-border);
+    background: var(--sg-surface-1);
   }
   .name {
     display: flex;
@@ -143,8 +143,8 @@
   }
   .file {
     overflow: hidden;
-    color: var(--sl-text);
-    font-size: var(--sl-text-md);
+    color: var(--sg-text);
+    font-size: var(--sg-text-md);
     font-weight: 500;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -152,10 +152,10 @@
   .badge {
     flex: none;
     padding: 1px 6px;
-    border: 1px solid var(--sl-border);
+    border: 1px solid var(--sg-border);
     border-radius: 10px;
-    color: var(--sl-text-muted);
-    font: var(--sl-text-xs) var(--sl-font-mono);
+    color: var(--sg-text-muted);
+    font: var(--sg-text-xs) var(--sg-font-mono);
     white-space: nowrap;
   }
   .color,
@@ -167,14 +167,14 @@
   }
   .hdr {
     padding: 1px 6px;
-    border-radius: var(--sl-radius-sm);
-    background: var(--sl-accent-weak);
-    color: var(--sl-accent);
-    font: 600 var(--sl-text-xs) var(--sl-font-mono);
+    border-radius: var(--sg-radius-sm);
+    background: var(--sg-accent-weak);
+    color: var(--sg-accent);
+    font: 600 var(--sg-text-xs) var(--sg-font-mono);
   }
   .hdr.off {
     background: none;
-    border: 1px solid var(--sl-warn);
-    color: var(--sl-warn);
+    border: 1px solid var(--sg-warn);
+    color: var(--sg-warn);
   }
 </style>

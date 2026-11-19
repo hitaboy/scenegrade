@@ -1,4 +1,4 @@
-import type { ScopeKind } from '@scenelinear/core';
+import type { ScopeKind } from '@scenegrade/core';
 import type { PlayerController } from '../controller.svelte.js';
 type $$ComponentProps = {
     ctl: PlayerController;

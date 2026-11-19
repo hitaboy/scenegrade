@@ -1,4 +1,4 @@
-import { Player, } from '@scenelinear/core';
+import { Player, } from '@scenegrade/core';
 /**
  * Bridges the headless Player to Svelte 5 runes. Components read `ctl.state` / `ctl.settings`
  * reactively and call `ctl.player.*` or `ctl.update()` to change things.

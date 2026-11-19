@@ -103,7 +103,7 @@ describe.skipIf(!ready)('exr-wasm decode', () => {
         const c = p0.chromaticities!;
         const flat = [...c.red, ...c.green, ...c.blue, ...c.white];
         flat.forEach((v, i) => expect(v).toBeCloseTo(f.chromaticities![i], 6));
-        expect(p0.attributes.owner).toMatch(/scenelinear/);
+        expect(p0.attributes.owner).toMatch(/scenegrade/);
       }
       if (f.kind === 'tiled') expect(p0.tiles?.xSize).toBe((f as { tileSize?: number }).tileSize);
       if (f.expectedLayers) {

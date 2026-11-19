@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 """
-Generate synthetic scene-linear ACEScg OpenEXR test media for scenelinear.
+Generate synthetic scene-linear ACEScg OpenEXR test media for scenegrade.
 
 Run from the repository root:
 
@@ -80,7 +80,7 @@ def base_header(compression, extra=None):
         "compression": compression,
         "type": OpenEXR.scanlineimage,
         "chromaticities": AP1_CHROMATICITIES,
-        "owner": "scenelinear synthetic test media (Apache-2.0)",
+        "owner": "scenegrade synthetic test media (Apache-2.0)",
     }
     if extra:
         hdr.update(extra)

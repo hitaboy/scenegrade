@@ -32,9 +32,9 @@
     z-index: 10;
     overflow: auto;
     padding: 16px 20px;
-    border: 1px solid var(--sl-border-strong);
+    border: 1px solid var(--sg-border-strong);
     border-radius: 8px;
-    background: color-mix(in srgb, var(--sl-surface-1) 96%, transparent);
+    background: color-mix(in srgb, var(--sg-surface-1) 96%, transparent);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   }
   header {
@@ -44,7 +44,7 @@
   }
   h2 {
     margin: 0;
-    font-size: var(--sl-text-lg);
+    font-size: var(--sg-text-lg);
     font-weight: 600;
   }
   .cols {
@@ -55,8 +55,8 @@
   }
   h3 {
     margin: 0 0 6px;
-    color: var(--sl-text-faint);
-    font-size: var(--sl-text-xs);
+    color: var(--sg-text-faint);
+    font-size: var(--sg-text-xs);
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -65,19 +65,19 @@
     grid-template-columns: max-content 1fr;
     gap: 5px 10px;
     margin: 0;
-    font-size: var(--sl-text-sm);
+    font-size: var(--sg-text-sm);
   }
   dd {
     margin: 0;
-    color: var(--sl-text-muted);
+    color: var(--sg-text-muted);
   }
   kbd {
     padding: 1px 5px;
-    border: 1px solid var(--sl-border-strong);
+    border: 1px solid var(--sg-border-strong);
     border-bottom-width: 2px;
     border-radius: 3px;
-    color: var(--sl-text);
-    font: var(--sl-text-xs) var(--sl-font-mono);
+    color: var(--sg-text);
+    font: var(--sg-text-xs) var(--sg-font-mono);
     white-space: nowrap;
   }
 </style>

@@ -1,36 +1,38 @@
-# scenelinear
+# scenegrade
 
-**Open-source WebGPU player for EXR, ProRes and video with ACES colour management** — histogram,
-waveform, vectorscope, false colour, zebra, pixel probe and A/B compare, embeddable in any web page
-with one tag.
+**Open-source colour grading and review in the browser.** WebGPU, ACES colour management, EXR,
+ProRes and video. Grade with node-based primaries, log wheels, curves and HSL curves; check the
+result on a histogram, waveform, vectorscope, false colour, zebra and pixel probe; compare A/B.
+Embed it in any web page with one tag.
 
-![scenelinear playing an ACEScct ProRes 422 HQ clip with ACES 2.0 SDR view, waveform and vectorscope](docs/images/player.jpg)
+![scenegrade playing an ACEScct ProRes 422 HQ clip with ACES 2.0 SDR view, waveform and vectorscope](docs/images/player.jpg)
 
 ```html
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@scenelinear/element/dist/scenelinear-player.js"
+  src="https://cdn.jsdelivr.net/npm/@scenegrade/element/dist/scenegrade-player.js"
 ></script>
 
-<scenelinear-player
+<scenegrade-player
   src="shot_010.mov"
   input-space="arri-logc4"
   view="srgb-aces2-sdr709"
-></scenelinear-player>
+></scenegrade-player>
 ```
 
-> **Name:** "scenelinear" is a working name. ACES is a trademark of the Academy of Motion Picture
-> Arts and Sciences; this project is not affiliated with or endorsed by the Academy.
+> ACES is a trademark of the Academy of Motion Picture Arts and Sciences; this project is not
+> affiliated with or endorsed by the Academy.
 
 ## Features
 
 |                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Formats**     | OpenEXR (scanline, tiled, multipart, multi-layer/AOVs; NONE, RLE, ZIPS, ZIP, PIZ, PXR24, B44, B44A, DWAA, DWAB, HTJ2K) · EXR sequences (`####`, `%04d`, folders, drag & drop) · **Apple ProRes** 422 Proxy/LT/422/HQ and 4444/4444 XQ with alpha, 10/12-bit · H.264 / HEVC / AV1 / VP9 via WebCodecs · PNG / JPEG / WebP / AVIF                                                                                                                                                                                                                                                                |
+| **Grading**     | Node-based grade on the GPU: exposure, white balance (temperature/tint), channel mixer · lift / gamma / gain / offset wheels with masters, contrast/pivot, saturation, hue · log wheels (shadows / midtones / highlights) · ASC CDL · Y/R/G/B curves · hue vs hue/sat/lum, lum vs sat, sat vs sat · node mix and bypass · undo/redo · stills · grade as JSON (`getGrade`/`setGrade`, `gradechange`)                                                                                                                                                                                            |
 | **Colour**      | ACES 2.0 (2.1 config) output transforms baked from the official OpenColorIO studio config: sRGB, Rec.1886, Display P3, Rec.2100 PQ/HLG 1000 nits (P3 / Rec.2020), Display P3 HDR, plus ACES 1.x SDR Video for comparison · 27 input spaces verified against OCIO (ACEScg, ACES2065-1, ACEScct/cc, linear and display Rec.709/P3/2020, ARRI LogC3/LogC4, Sony S-Log3, RED Log3G10, Canon Log 2/3, Panasonic V-Log, Apple Log, DaVinci Intermediate, BMD Film Gen5, DJI D-Log…) · HDR output on HDR displays · exposure, saturation, gamma · ASC CDL (in ACEScct) · `.cube` look or display LUTs |
 | **Analysis**    | Histogram (display or scene stops, linear/log) · waveform (luma, RGB overlay, RGB parade) · vectorscope with 75/100 % targets and skin line · false colour (scene stops ARRI-style / EL Zone, or display IRE) · zebra (high + mid band) · clipping, crushed blacks and NaN/Inf detection · focus peaking · pixel probe (file value, ACEScg, display code values, stops, nits, area average, pinned samples) · safe areas, centre, thirds and aspect masks                                                                                                                                      |
 | **Review**      | Frame-accurate playback, J/K/L, in/out, loop / ping-pong / once, real-time or every-frame, audio sync · A/B compare: wipe, side by side, difference, blend · data/display window (overscan) · channel and layer isolation · snapshot · timecode (incl. drop-frame)                                                                                                                                                                                                                                                                                                                             |
-| **Integration** | `<scenelinear-player>` Web Component · Svelte 5 components · headless TypeScript core for any UI · no server headers needed (works without COOP/COEP)                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Integration** | `<scenegrade-player>` Web Component · Svelte 5 components · headless TypeScript core for any UI · no server headers needed (works without COOP/COEP)                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 ## How it works
 
@@ -52,16 +54,16 @@ with one tag.
   (sRGB view) is ΔE2000 mean 0.16 / p99 0.8. Input transforms are analytic and match OCIO to 4e-5.
 
 Details: [docs/architecture.md](docs/architecture.md) · [benchmarks](docs/benchmarks.md) ·
-[UI design](docs/design.md) · [integration guide](docs/integration.md).
+[grading engine](docs/grading.md) · [UI design](docs/design.md) · [integration guide](docs/integration.md).
 
 ## Packages
 
-| Package                                      | What                                                                             |
-| -------------------------------------------- | -------------------------------------------------------------------------------- |
-| [`@scenelinear/element`](packages/element)   | `<scenelinear-player>` Web Component (one script tag)                            |
-| [`@scenelinear/svelte`](packages/svelte)     | Svelte 5 components: `ScenePlayer`, `Viewer`, `Scope`, `Transport`, panels       |
-| [`@scenelinear/core`](packages/core)         | Headless engine: `Player`, WebGPU renderer, scopes, colour module, media sources |
-| [`@scenelinear/exr-wasm`](packages/exr-wasm) | OpenEXR → WebAssembly decoder + worker pool                                      |
+| Package                                     | What                                                                             |
+| ------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`@scenegrade/element`](packages/element)   | `<scenegrade-player>` Web Component (one script tag)                             |
+| [`@scenegrade/svelte`](packages/svelte)     | Svelte 5 components: `ScenePlayer`, `Viewer`, `Scope`, `Transport`, panels       |
+| [`@scenegrade/core`](packages/core)         | Headless engine: `Player`, WebGPU renderer, scopes, colour module, media sources |
+| [`@scenegrade/exr-wasm`](packages/exr-wasm) | OpenEXR → WebAssembly decoder + worker pool                                      |
 
 ## Browser support
 

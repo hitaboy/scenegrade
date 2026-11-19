@@ -17,7 +17,7 @@ export default defineConfig({
     assetsInlineLimit: 0,
     copyPublicDir: false,
     rollupOptions: {
-      input: { 'scenelinear-player': 'src/index.ts' },
+      input: { 'scenegrade-player': 'src/index.ts' },
       preserveEntrySignatures: 'strict',
       output: {
         format: 'es',

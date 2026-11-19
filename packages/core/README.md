@@ -1,11 +1,11 @@
-# @scenelinear/core
+# @scenegrade/core
 
-Headless engine of [scenelinear](../../README.md): WebGPU renderer, ACES colour pipeline, scopes,
+Headless engine of [scenegrade](../../README.md): WebGPU renderer, ACES colour pipeline, scopes,
 overlays, frame cache and frame-accurate playback for EXR, ProRes and WebCodecs video. No UI, no
 framework.
 
 ```ts
-import { Player, color } from '@scenelinear/core';
+import { Player, color } from '@scenegrade/core';
 
 const player = new Player();
 await player.attach(canvas);
