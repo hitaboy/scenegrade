@@ -84,8 +84,8 @@ const LOOK = (t) => ({
   ],
 });
 
-// 1. Hero: night pier, grade palette open, scopes.
-await open('/media/local/moll_P2-nit.mov', 60);
+// 1. Hero: night forest, grade palette open, scopes.
+await open('/media/local/bosc_P4-nit.mov', 70);
 await ui({ gradeOpen: true, gradeTab: 'log', panelOpen: true, panelTab: 'scopes' });
 await setGrade(LOOK(1));
 await ev(() => (globalThis.scenegrade.ui.gradeNode = globalThis.scenegrade.grade.nodes[1].id));
@@ -125,43 +125,43 @@ for (const [name, patch] of tools) {
 }
 await settings({ peaking: { enabled: false } });
 
-// 4. A/B compare: day vs night of the same set-up (wipe), then side by side.
-await open('/media/local/moll_P2-dia.mov', 40);
-await ev(async () => {
-  const c = globalThis.scenegrade;
-  c.player.settingsB.inputSpace = 'acescct';
-  await c.player.loadCompare('/media/local/moll_P2-nit.mov');
-  c.update({ compare: { ...c.settings.compare, mode: 'wipe', wipe: 0.5 } });
-  c.player.seek(40);
-});
-await sleep(1500);
-for (let i = 0; i <= 30; i++) {
-  const w = 0.5 + 0.35 * Math.sin((2 * Math.PI * i) / 30);
-  await settings({ compare: { mode: 'wipe', wipe: w } });
-  await shot(`wipe_${String(i).padStart(3, '0')}.png`);
-}
-await ev(() => globalThis.scenegrade.player.loadCompare(null));
-await settings({ compare: { mode: 'off' } });
-
-// 5. HSL: portrait, hue vs sat curve open.
-await open('/media/local/moll_P5-dia.mov', 60);
-await ui({ gradeOpen: true, gradeTab: 'curves' });
+// 4. Split: the same close-up, original (B) against graded (A), wipe moving.
+await open('/media/local/casa_P5-nit.mov', 60);
 await setGrade({
   nodes: [
     {
-      primaries: { contrast: 1.1 },
+      label: 'Skin',
+      linear: { exposure: 0.55, temperature: 6000 },
+      primaries: { contrast: 1.06, saturation: 1.1, gain: [1.035, 1, 0.965, 1] },
+    },
+    {
+      label: 'Night',
+      logWheels: { shadows: [-0.02, 0.004, 0.032], highlights: [0.022, 0.006, -0.02] },
       curves: {
         y: [
-          [0, 0],
-          [0.35, 0.33],
-          [0.65, 0.68],
+          [0, 0.01],
+          [0.3, 0.29],
+          [0.62, 0.635],
           [1, 1],
         ],
       },
     },
   ],
 });
-await shot('curves.jpg');
+await ev(() => {
+  const c = globalThis.scenegrade;
+  c.player.setCompareOriginal(true);
+  c.update({ compare: { ...c.settings.compare, mode: 'wipe', wipe: 0.5, angle: 0 } });
+});
+await sleep(800);
+await shot('split_still.png');
+for (let i = 0; i <= 40; i++) {
+  const w = 0.5 + 0.38 * Math.sin((2 * Math.PI * i) / 40);
+  await settings({ compare: { mode: 'wipe', wipe: w } });
+  await shot(`wipe_${String(i).padStart(3, '0')}.png`);
+}
+await ev(() => globalThis.scenegrade.player.setCompareOriginal(false));
+await setGrade({ nodes: [{}] });
 
 await browser.close();
 console.log('done', out);

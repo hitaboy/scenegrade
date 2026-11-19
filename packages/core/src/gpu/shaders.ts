@@ -30,7 +30,7 @@ struct U {
   cdlOffset: vec4f,
   cdlPower : vec4f, // w = saturation
   hdr      : vec4f, // reference white nits, view peak nits, 0, 0
-  lut      : vec4f, // view LUT size, user LUT size, 0, 0
+  lut      : vec4f, // view LUT size, user LUT size, B ungraded (1 = compare with original), 0
   peakCol  : vec4f, // rgb, threshold
   bgCol    : vec4f, // viewer background (outside image)
   outM0    : vec4f, // display primaries -> canvas primaries (linear), rows
@@ -201,7 +201,8 @@ export interface ColorWgsl {
   falseColor: string;
 }
 
-const BINDINGS_WGSL = /* wgsl */ `
+const BINDINGS_WGSL =
+  /* wgsl */ `
 @group(0) @binding(0) var<uniform> u : U;
 @group(0) @binding(1) var sceneA : texture_2d<f32>;
 @group(0) @binding(2) var sceneB : texture_2d<f32>;
@@ -209,12 +210,17 @@ const BINDINGS_WGSL = /* wgsl */ `
 @group(0) @binding(4) var userLut : texture_3d<f32>;
 @group(0) @binding(5) var linSmp : sampler;
 @group(0) @binding(6) var nearSmp : sampler;
-` + GRADE_BINDINGS_WGSL + GRADE_WGSL;
+` +
+  GRADE_BINDINGS_WGSL +
+  GRADE_WGSL;
 
 const CHAIN_WGSL = /* wgsl */ `
 fn lutCoord(c: vec3f, n: f32) -> vec3f {
   return clamp(c, vec3f(0.0), vec3f(1.0)) * ((n - 1.0) / n) + vec3f(0.5 / n);
 }
+
+/** False while shading the B side of a "compare with original" split (grade bypassed there). */
+var<private> sl_gradeOn: bool = true;
 
 /** Scene-referred grading applied before the view transform. Input/output: linear ACEScg. */
 fn gradeScene(s: vec3f) -> vec3f {
@@ -224,7 +230,7 @@ fn gradeScene(s: vec3f) -> vec3f {
     let y = dot(c, R_LUMA_AP1);
     c = vec3f(y) + (c - vec3f(y)) * sat;
   }
-  c = sl_grade(c);
+  if (sl_gradeOn) { c = sl_grade(c); }
   if (u.modes2.z == 1u || u.modes2.y == 1u) {
     var cct = sl_acescg_to_acescct(c);
     if (u.modes2.z == 1u) {
@@ -343,6 +349,7 @@ fn displayLuma(p: vec2f, which: u32) -> f32 {
     if (dist < 1.0 && p.x >= 0.0 && p.y >= 0.0 && p.x < W && p.y < H) { return vec4f(1.0, 1.0, 1.0, 1.0); }
   }
 
+  sl_gradeOn = !(which == 1u && u.lut.z > 0.5);
   let insideDisp = p.x >= 0.0 && p.y >= 0.0 && p.x < W && p.y < H;
   var s : vec4f;
   let pB = p * u.dispB.xy / vec2f(W, H);

@@ -64,6 +64,8 @@ export interface PlayerState {
   hdrDisplay: boolean;
   /** Incremented on every grade change; read the grade with `getGrade()`. */
   gradeRevision: number;
+  /** A/B against the same image without the grade (no second source needed). */
+  compareOriginal: boolean;
   canUndo: boolean;
   canRedo: boolean;
 }
@@ -182,6 +184,7 @@ export class Player {
       cacheVersion: 0,
       hdrDisplay: detectHdrDisplay(),
       gradeRevision: 0,
+      compareOriginal: false,
       canUndo: false,
       canRedo: false,
     };
@@ -274,6 +277,19 @@ export class Player {
     }
   }
 
+  /**
+   * Compares the image with itself without the grade: B = original, A = graded (wipe,
+   * side by side or blend). Replaces any second source.
+   */
+  setCompareOriginal(on: boolean): void {
+    if (on && this.sourceB) void this.loadCompare(null);
+    if (on && this.settings.compare.mode === 'off') this.settings.compare.mode = 'wipe';
+    if (!on && !this.sourceB) this.settings.compare.mode = 'off';
+    this.set({ compareOriginal: on });
+    this.invalidate();
+    for (const fn of this.listeners) fn(this.state, new Set());
+  }
+
   /** Loads a second source for A/B comparison (same frame numbering). Pass null to clear. */
   async loadCompare(input: MediaInput | null, opts: OpenOptions = {}): Promise<MediaInfo | null> {
     this.sourceB?.dispose();
@@ -288,7 +304,7 @@ export class Player {
     }
     const src = await openMedia(input, { ...this.options.open, ...opts });
     this.sourceB = src;
-    this.set({ mediaB: src.info });
+    this.set({ mediaB: src.info, compareOriginal: false });
     if (this.settings.compare.mode === 'off') this.settings.compare.mode = 'wipe';
     this.requestB(this.state.frame);
     this.invalidate();
@@ -457,7 +473,10 @@ export class Player {
     const m = this.state.media;
     if (!m) return { w: 1, h: 1 };
     const pa = m.pixelAspectRatio || 1;
-    const sbs = this.settings.compare.mode === 'side-by-side' && this.sourceB ? 2 : 1;
+    const sbs =
+      this.settings.compare.mode === 'side-by-side' && (this.sourceB || this.state.compareOriginal)
+        ? 2
+        : 1;
     return { w: m.width * pa * sbs, h: m.height };
   }
 
@@ -884,12 +903,14 @@ export class Player {
     if (!r) return;
     this.dirty = false;
     const a = this.sceneFor('a');
-    const b = this.sourceB ? this.sceneFor('b') : null;
+    const original = this.state.compareOriginal && !this.sourceB;
+    const b = this.sourceB ? this.sceneFor('b') : original ? a : null;
     const t = now / 1000;
     for (const s of this.surfaces.values()) {
       s.render(this.settings, this.state.view, a, b, {
         time: t,
         hdrDisplay: this.state.hdrDisplay,
+        bUngraded: original,
       });
     }
     // Scopes: every frame when paused, ~20 Hz while playing.

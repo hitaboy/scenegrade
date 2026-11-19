@@ -13,7 +13,7 @@ ACES 2.0 · OpenEXR · ProRes · WebGPU · one HTML tag.
 [**Live demo**](https://hitaboy.github.io/scenegrade/) · [Integration](docs/integration.md) ·
 [Grading engine](docs/grading.md) · [Architecture](docs/architecture.md)
 
-<a href="https://hitaboy.github.io/scenegrade/"><img src="docs/images/hero.jpg" alt="scenegrade grading an ACEScct ProRes night shot: viewer with the ACES 2.0 SDR view, RGB parade, vectorscope and the log wheels of a three-node grade" width="100%"></a>
+<a href="https://hitaboy.github.io/scenegrade/"><img src="docs/images/hero.jpg" alt="scenegrade grading an ACEScct ProRes night shot in a forest: viewer with the ACES 2.0 SDR view, RGB parade, vectorscope and the log wheels of a three-node grade" width="100%"></a>
 
 </div>
 
@@ -25,7 +25,7 @@ HSL curves, checked on GPU scopes. No install, no server-side processing, no spe
 
 ## Grade anywhere
 
-<img src="docs/images/grading.gif" alt="Live grading: white balance, contrast, gain and split-tone log wheels moving while the waveform and vectorscope follow" width="100%">
+<img src="docs/images/grading.gif" alt="Live grading of a night forest shot: white balance, contrast, gain and split-tone log wheels moving while the waveform and vectorscope follow" width="100%">
 
 - **Node grade on the GPU.** Each node has these controls:
   - exposure, white balance (temperature/tint) and a channel mixer;
@@ -58,9 +58,11 @@ grade included.
 
 ## Compare
 
-<img src="docs/images/compare.gif" alt="A/B wipe between the day and night versions of the same pier shot" width="100%">
+<img src="docs/images/compare.gif" alt="Split screen on a night close-up: the same frame graded on the left and original on the right, with the wipe moving" width="100%">
 
-A/B in wipe, side-by-side, difference or blend. Load a second clip, or drop it with Alt.
+The **Split** toggle compares the same frame graded and ungraded, with a wipe or side by side, like
+a grading suite's split screen. A second clip can be compared A/B with a wipe, side by side,
+difference or blend; load it, or drop it while holding Alt.
 
 ## Embed it
 

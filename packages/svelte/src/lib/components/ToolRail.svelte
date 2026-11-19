@@ -66,7 +66,7 @@
     icon="compare"
     label="Compare A/B"
     shortcut="W"
-    active={!!ctl.state.mediaB}
+    active={!!ctl.state.mediaB || ctl.state.compareOriginal}
     onclick={() => oncompare?.()}
   />
   <Btn

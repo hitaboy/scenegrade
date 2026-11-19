@@ -255,6 +255,11 @@
     <span class="grow"></span>
     <div class="globalops">
       <Toggle
+        checked={ctl.state.compareOriginal}
+        label="Split"
+        onchange={(v) => ctl.player.setCompareOriginal(v)}
+      />
+      <Toggle
         checked={!g.enabled}
         label="Bypass"
         onchange={(v) => setGrade({ ...ctl.player.getGrade(), enabled: !v })}

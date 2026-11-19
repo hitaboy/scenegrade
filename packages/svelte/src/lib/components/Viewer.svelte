@@ -52,7 +52,9 @@
     if (e.button === 2) return;
     wrap.setPointerCapture(e.pointerId);
     const nearWipe =
-      ctl.settings.compare.mode === 'wipe' && ctl.state.mediaB && Math.abs(e.offsetX - wipeX()) < 8;
+      ctl.settings.compare.mode === 'wipe' &&
+      (ctl.state.mediaB || ctl.state.compareOriginal) &&
+      Math.abs(e.offsetX - wipeX()) < 8;
     dragging = { x: e.clientX, y: e.clientY, mode: nearWipe ? 'wipe' : 'pan' };
     if (ctl.ui.tool === 'probe' && e.button === 0 && e.altKey) void pin(e);
   }
@@ -225,7 +227,7 @@
           class="g"
         />
       {/if}
-      {#if ctl.settings.compare.mode === 'wipe' && ctl.state.mediaB}
+      {#if ctl.settings.compare.mode === 'wipe' && (ctl.state.mediaB || ctl.state.compareOriginal)}
         {@const x = wipeX()}
         <circle cx={x} cy={rect.y + rect.h / 2} r="7" class="handle" />
         <text x={x - 14} y={rect.y + 16} class="ab" text-anchor="end">A</text>

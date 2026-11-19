@@ -73,7 +73,9 @@ export function rgbToXyz(p: Primaries): M3 {
 }
 
 /** Bradford cone response matrix (what the ACES 2.x OCIO studio config uses for D60 <-> D65). */
-export const BRADFORD: M3 = [0.8951, 0.2664, -0.1614, -0.7502, 1.7135, 0.0367, 0.0389, -0.0685, 1.0296];
+export const BRADFORD: M3 = [
+  0.8951, 0.2664, -0.1614, -0.7502, 1.7135, 0.0367, 0.0389, -0.0685, 1.0296,
+];
 /** CAT02 cone response matrix. */
 export const CAT02: M3 = [0.7328, 0.4296, -0.1624, -0.7036, 1.6975, 0.0061, 0.003, 0.0136, 0.9834];
 

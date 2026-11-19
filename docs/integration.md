@@ -59,6 +59,7 @@ el.addEventListener('error', (e) => console.error(e.detail.message));
 el.setGrade(savedJson);
 el.addEventListener('gradechange', (e) => save(e.detail.grade));
 el.undo(); el.redo();
+el.getPlayer().setCompareOriginal(true);   // split screen: graded | original
 ```
 
 ### Theming

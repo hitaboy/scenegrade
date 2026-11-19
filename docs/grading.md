@@ -62,6 +62,7 @@ player.commitGradeEdit(); // on pointer up: end the coalesced undo step
 player.undo();
 player.redo();
 player.getGrade(); // deep copy
+player.setCompareOriginal(true); // split: A = graded, B = the same image without the grade
 player.gradeCPU([r, g, b]); // graded ACEScg, as the shader computes it
 player.state.gradeRevision; // changes on every edit; also canUndo / canRedo
 ```

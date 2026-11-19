@@ -266,3 +266,39 @@ test('grade panel: wheel, curve and node edits are undoable steps', async ({ pag
   expect(r.after).toBe(1);
   expect(errors).toEqual([]);
 });
+
+test('compare with original: graded on the A side, untouched on the B side', async ({ page }) => {
+  await setup(page);
+  await load(page, `${base}exr/chart_zip.exr`);
+  const r = await page.evaluate(async () => {
+    const c = (globalThis as any).scenegrade;
+    const p = c.player;
+    p.zoomTo(1, { x: 0, y: 0 });
+    p.panBy(-p.state.view.panX, -p.state.view.panY);
+    const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
+    const px = async (x: number, y: number) => {
+      await wait(300);
+      const bmp = await createImageBitmap(await p.snapshot());
+      const cv = new OffscreenCanvas(bmp.width, bmp.height);
+      const ctx = cv.getContext('2d')!;
+      ctx.drawImage(bmp, 0, 0);
+      return Array.from(ctx.getImageData(x, y, 1, 1).data).slice(0, 3);
+    };
+    const origR = await px(700, 162);
+    p.setGrade({ nodes: [{ linear: { exposure: 1 }, primaries: { saturation: 0.5 } }] });
+    const gradedL = await px(100, 162);
+    const gradedR = await px(700, 162);
+    p.setCompareOriginal(true);
+    c.update({ compare: { ...c.settings.compare, mode: 'wipe', wipe: 0.2, angle: 0 } });
+    const splitL = await px(100, 162);
+    const splitR = await px(700, 162);
+    const state = p.state.compareOriginal;
+    p.setCompareOriginal(false);
+    return { origR, gradedL, gradedR, splitL, splitR, state, mode: c.settings.compare.mode };
+  });
+  expect(r.state).toBe(true);
+  expect(r.gradedR).not.toEqual(r.origR);
+  expect(r.splitL).toEqual(r.gradedL);
+  expect(r.splitR).toEqual(r.origR);
+  expect(r.mode).toBe('off');
+});

@@ -581,7 +581,13 @@ export class Renderer {
     canvas: { width: number; height: number },
     a: SceneImage | null,
     b: SceneImage | null,
-    out: { hdrOutput: boolean; canvasPrimaries: 'srgb' | 'display-p3'; time: number },
+    out: {
+      hdrOutput: boolean;
+      canvasPrimaries: 'srgb' | 'display-p3';
+      time: number;
+      /** B is the A image shown without the grade (compare with original). */
+      bUngraded?: boolean;
+    },
   ): ArrayBuffer {
     const buf = new ArrayBuffer(UNIFORM_VEC4S * 16);
     const f = new Float32Array(buf);
@@ -638,7 +644,7 @@ export class Renderer {
     set4(12, ...s.cdl.offset, 0);
     set4(13, ...s.cdl.power, s.cdl.saturation);
     set4(14, s.hdr.referenceWhite, lut?.peakNits ?? 100, 0, 0);
-    set4(15, lut?.size ?? 2, this.userLut?.size ?? 2, 0, 0);
+    set4(15, lut?.size ?? 2, this.userLut?.size ?? 2, out.bUngraded ? 1 : 0, 0);
     set4(16, ...s.peaking.color, s.peaking.threshold);
     set4(17, ...s.backgroundColor, 1);
 
@@ -748,7 +754,7 @@ export class Surface {
     view: ViewTransform,
     a: SceneImage | null,
     b: SceneImage | null,
-    opts: { time: number; hdrDisplay: boolean },
+    opts: { time: number; hdrDisplay: boolean; bUngraded?: boolean },
   ): void {
     const r = this.renderer;
     const lut = r.currentView;
@@ -765,6 +771,7 @@ export class Surface {
       hdrOutput,
       canvasPrimaries: colorSpace,
       time: opts.time,
+      bUngraded: opts.bUngraded,
     });
     r.device.queue.writeBuffer(this.uniforms, 0, data);
 

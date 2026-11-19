@@ -129,13 +129,16 @@
   }
 
   function compareClick() {
-    if (ctl.state.mediaB) {
+    if (ctl.state.compareOriginal) {
+      ctl.player.setCompareOriginal(false);
+    } else if (ctl.state.mediaB) {
       void ctl.player.loadCompare(null);
       ctl.update({ compare: { ...ctl.settings.compare, mode: 'off' } });
     } else compareInput.click();
   }
   const ACCEPT = '.exr,.mov,.mp4,.m4v,.mkv,.webm,.png,.jpg,.jpeg,.webp,.avif';
   const compareModes = ['wipe', 'side-by-side', 'difference', 'blend'] as const;
+  const originalModes = ['wipe', 'side-by-side'] as const;
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
@@ -217,10 +220,13 @@
           </button>
         </div>
       {/if}
-      {#if ctl.state.mediaB && full && !ctl.ui.clean}
+      {#if (ctl.state.mediaB || ctl.state.compareOriginal) && full && !ctl.ui.clean}
         <div class="cmp" role="group" aria-label="Compare mode">
-          <span class="ab">A: {ctl.state.media?.name} · B: {ctl.state.mediaB.name}</span>
-          {#each compareModes as m (m)}
+          <span class="ab">
+            {#if ctl.state.mediaB}A: {ctl.state.media?.name} · B: {ctl.state.mediaB.name}{:else}A:
+              graded · B: original{/if}
+          </span>
+          {#each ctl.state.mediaB ? compareModes : originalModes as m (m)}
             <button
               type="button"
               class:on={ctl.settings.compare.mode === m}
