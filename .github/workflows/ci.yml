@@ -15,6 +15,7 @@ concurrency:
 jobs:
   build-test:
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -23,8 +24,16 @@ jobs:
           node-version: 22
           cache: pnpm
       - uses: astral-sh/setup-uv@v5
+      # Static FFmpeg (BtbN GPL build: x264, x265, SVT-AV1, prores_ks). Avoids apt, whose
+      # Ubuntu mirrors on the runners are sometimes down.
       - name: Install ffmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        timeout-minutes: 5
+        run: |
+          curl -fsSL --retry 4 --retry-delay 5 \
+            https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz \
+            | tar -xJ -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/ffmpeg-master-latest-linux64-gpl/bin/ffmpeg" -hide_banner -encoders | grep -E "libx264|libx265|libsvtav1|prores_ks"
 
       - run: pnpm install --frozen-lockfile
 
@@ -52,6 +61,7 @@ jobs:
       - run: pnpm build
 
       - name: E2E (Chromium, WebGPU via SwiftShader)
+        timeout-minutes: 15
         env:
           PW_CHROMIUM: '1'
         run: |
