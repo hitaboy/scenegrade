@@ -462,3 +462,26 @@ El audio se copia sin recodificar.
 | Sin encoder ProRes nativo                              | Paquete WASM opcional; recomendar HEVC 10 bits o EXR para entrega intermedia                              |
 | Memoria de pestaña en lotes largos                     | Streaming a disco, frames liberados en cuanto se codifican, sin caché de salida                           |
 | Control surfaces propietarias                          | Empezar por MIDI genérico y Gamepad; Tangent/Blackmagic cuando sea posible                                |
+
+## 9. Estado y pendientes (2026-11-23)
+
+**Hecho:** v1 (player) y fases 12–13 (grade). Publicado en npm 0.1.0 (`@scenegrade/core`, `svelte`,
+`element`, `exr-wasm`) con Trusted Publishing (`scripts/publish.sh`, `release.yml`, sin NPM_TOKEN).
+Demo en https://hitaboy.github.io/scenegrade/. CI verde en `main`. Split compare (mismo fotograma
+etalonado vs original: `Player.setCompareOriginal`, interruptor Split en GradePanel).
+
+**Pendiente:**
+
+- **Fase 14** (exportar/importar CDL, CLF, .cube, AMF): siguiente paso propuesto, sin confirmar.
+- **npm:** confirmar que cada paquete tiene el Trusted Publisher configurado en npmjs.com.
+  Opcional: `npm deprecate @scenegrade/element@0.0.0-stage`.
+- **Dependabot:** el PR de `npm_and_yarn` (typescript, @types/node, vitest) falla en CI; revisar
+  antes de fusionar.
+- **Media del README:** se capturan con `apps/demo/scripts/readme-media.mjs` a partir de los
+  masters ACEScct de hitazot (`/srv/ai/projectes/bateria-*/masters-acescct/`), copiados en
+  `apps/demo/public/media/local/` (gitignored). El usuario prefiere una mujer joven en pantalla;
+  en hitazot solo hay fotos fijas (Núria, `outputs/guio/el-far/`). Propuesta sin lanzar: still →
+  MiniMax i2v → sdr2hdr a ACEScct (~1 h de GPU en la RTX 4070); pedir confirmación antes, la GPU
+  se comparte con otros trabajos.
+- **Acceso a hitazot:** `ssh hitazot` (clave `~/.ssh/hitazot_ed25519`); documentación en `/srv/ai`
+  (README.md, COMMENTS.md).
