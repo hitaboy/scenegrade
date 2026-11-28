@@ -1,5 +1,6 @@
 import type { FramePixels, Box2 } from '../media/types.js';
 import { getGpu, configureCanvas, CANVAS_FORMAT, type GpuContext } from './context.js';
+import { GpuTimer } from './timer.js';
 import { decodeShader, displayShader, type DecodeKind, type ColorWgsl } from './shaders.js';
 import type { DisplaySettings, ViewTransform } from './settings.js';
 import { PRIMARIES, rgbToRgb, type M3 } from './matrices.js';
@@ -48,6 +49,8 @@ const UNIFORM_VEC4S = 25;
  */
 export class Renderer {
   readonly gpu: GpuContext;
+  /** GPU time per pass (null without `timestamp-query`). */
+  readonly timer: GpuTimer | null;
   readonly device: GPUDevice;
   readonly linearSampler: GPUSampler;
   readonly nearestSampler: GPUSampler;
@@ -75,6 +78,7 @@ export class Renderer {
   private constructor(gpu: GpuContext) {
     this.gpu = gpu;
     this.device = gpu.device;
+    this.timer = GpuTimer.create(gpu.device);
     const d = this.device;
     this.linearSampler = d.createSampler({
       magFilter: 'linear',
@@ -508,16 +512,20 @@ export class Renderer {
     const { pipeline, layout } = this.decodePipeline(kind, sub, opts.inputSpace);
     const bg = d.createBindGroup({ layout, entries });
     const enc = d.createCommandEncoder({ label: 'decode' });
+    const t = this.timer?.measure('decode');
     const pass = enc.beginRenderPass({
       colorAttachments: [
         { view: target.createView(), loadOp: 'clear', storeOp: 'store', clearValue: [0, 0, 0, 0] },
       ],
+      timestampWrites: t?.timestampWrites,
     });
     pass.setPipeline(pipeline);
     pass.setBindGroup(0, bg);
     pass.draw(3);
     pass.end();
+    t?.resolve(enc);
     d.queue.submit([enc.finish()]);
+    t?.submitted();
 
     return {
       key: opts.key,
@@ -781,7 +789,9 @@ export class Surface {
       this.bindKey = key;
     }
     const enc = r.device.createCommandEncoder({ label: 'display' });
+    const t = r.timer?.measure('display');
     const pass = enc.beginRenderPass({
+      timestampWrites: t?.timestampWrites,
       colorAttachments: [
         {
           view: this.ctx.getCurrentTexture().createView(),
@@ -797,7 +807,9 @@ export class Surface {
       pass.draw(3);
     }
     pass.end();
+    t?.resolve(enc);
     r.device.queue.submit([enc.finish()]);
+    t?.submitted();
   }
 
   /** Forces the bind group to be rebuilt (e.g. after a scene texture was recycled). */

@@ -154,9 +154,10 @@
         />
       {/if}
     </div>
-    <div class="stats" title="Playback fps · decode time · dropped frames · cache">
+    <div class="stats" title="Playback fps · decode time · GPU time · dropped frames · cache">
       <span>{ctl.state.playing ? ctl.state.stats.fps.toFixed(1) : '—'} fps</span>
       <span>{ctl.state.stats.decodeMs.toFixed(0)} ms</span>
+      {#if ctl.state.stats.gpuMs > 0}<span>GPU {ctl.state.stats.gpuMs.toFixed(1)} ms</span>{/if}
       {#if ctl.state.stats.dropped > 0}<span class="warn">{ctl.state.stats.dropped} drop</span>{/if}
       <span>{(ctl.state.stats.cacheBytes / 1048576).toFixed(0)} MB</span>
     </div>

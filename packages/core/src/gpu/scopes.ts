@@ -165,7 +165,8 @@ export class ScopeEngine {
     enc.clearBuffer(this.wave);
     enc.clearBuffer(this.vect);
     enc.clearBuffer(this.stats);
-    const pass = enc.beginComputePass();
+    const t = this.r.timer?.measure('scopes');
+    const pass = enc.beginComputePass({ timestampWrites: t?.timestampWrites });
     pass.setPipeline(this.pipeline());
     pass.setBindGroup(0, r.displayBindGroup(this.du, scene, null));
     pass.setBindGroup(
@@ -183,7 +184,9 @@ export class ScopeEngine {
     );
     pass.dispatchWorkgroups(Math.ceil(gw / 16), Math.ceil(gh / 16));
     pass.end();
+    t?.resolve(enc);
     d.queue.submit([enc.finish()]);
+    t?.submitted();
     this.lastStats = { samples: gw * gh };
   }
 

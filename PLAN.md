@@ -510,8 +510,8 @@ Basado en el estado del repo a esta fecha. Por prioridad; cada bloque es indepen
   sentido al grading fuera del navegador. Empezar por CDL (trivial) y CLF.
 - ~~**Tamaño del bundle**~~ — hecho el 2026-11-28: Mediabunny (53 % del JS) se carga al abrir un
   vídeo. `scenegrade-player.js` pasa de 199.7 a 99.7 KB gz; el chunk de vídeo son 116 KB gz.
-- **Timestamp queries de GPU** en la UI (detectadas pero sin cablear): necesario para vigilar el
-  presupuesto de 8 ms / 2 ms y la Fase 16 (secundarias).
+- ~~**Timestamp queries de GPU**~~ — hecho el 2026-11-28: `Renderer.timer` (decode, display,
+  scopes), `stats.gpuMs` y en la barra de transporte. ProRes 1080p ≈ 1.1 ms de GPU por frame.
 
 - ~~**e2e en CI**~~ — hecho el 2026-11-28: se saltaban todos (sin adaptador) y en los PR el canvas
   no se presentaba. Arreglado con ANGLE sobre SwiftShader; en CI ahora falla si no hay adaptador.

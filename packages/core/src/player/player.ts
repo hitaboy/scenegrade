@@ -51,7 +51,7 @@ export interface PlayerState {
   view: ViewTransform;
   /** 'fit' keeps the image fitted on resize; 'manual' after the user zooms/pans. */
   fitMode: 'fit' | 'manual';
-  /** Measured playback fps and decode time. */
+  /** Measured playback fps, decode time and GPU time (decode + display + scopes, 0 if unknown). */
   stats: {
     fps: number;
     decodeMs: number;
@@ -898,10 +898,18 @@ export class Player {
   /** Settings override for the B side (its own input space). */
   readonly settingsB: { inputSpace?: string } = {};
 
+  private lastGpuStat = 0;
+
   private draw(now: number): void {
     const r = this.renderer;
     if (!r) return;
     this.dirty = false;
+    // GPU time of the last frames (timestamp queries, read back asynchronously), ≤ 4 updates/s.
+    if (r.timer && now - this.lastGpuStat > 250) {
+      this.lastGpuStat = now;
+      const gpuMs = Math.round(r.timer.totalMs * 100) / 100;
+      if (gpuMs !== this.state.stats.gpuMs) this.set({ stats: { ...this.state.stats, gpuMs } });
+    }
     const a = this.sceneFor('a');
     const original = this.state.compareOriginal && !this.sourceB;
     const b = this.sourceB ? this.sceneFor('b') : original ? a : null;

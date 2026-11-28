@@ -67,6 +67,8 @@ test('ProRes 422 HQ (ACEScct) decodes 10-bit and plays in real time', async ({ p
     c.update({ inputSpace: 'acescct' });
     c.player.play();
     await new Promise((r) => setTimeout(r, 3000));
+    const gpu = { ...(c.player.renderer.timer?.ms ?? {}), total: c.state.stats.gpuMs };
+    const hasTimer = !!c.player.renderer.timer;
     c.player.pause();
     const p = c.player;
     p.seek(0);
@@ -77,6 +79,8 @@ test('ProRes 422 HQ (ACEScct) decodes 10-bit and plays in real time', async ({ p
     const probe = await p.probe(960, 162);
     return {
       fps: c.state.stats.fps,
+      gpu,
+      hasTimer,
       fmt: c.state.media.pixelFormat,
       scene: probe.scene,
       error: c.state.error,
@@ -86,6 +90,9 @@ test('ProRes 422 HQ (ACEScct) decodes 10-bit and plays in real time', async ({ p
   expect(s.fmt).toBe('I422P10');
   // Real-time playback is only meaningful on a hardware GPU (CI uses SwiftShader).
   if (!process.env.PW_CHROMIUM) expect(s.fps).toBeGreaterThan(20);
+  // GPU timing reaches the stats when timestamp queries are available.
+  if (s.hasTimer) expect(s.gpu.total).toBeGreaterThan(0);
+  console.log('ProRes 1080p GPU ms', JSON.stringify(s.gpu));
   // The encoder (ffmpeg swscale) stored the 18% patch as Y' code 428 (ideal 426.3):
   // ACEScct (428 - 64) / 876 -> linear 0.184284. The player must decode that exactly.
   for (const v of s.scene) expect(Math.abs(v - 0.184284) / 0.184284).toBeLessThan(0.002);
