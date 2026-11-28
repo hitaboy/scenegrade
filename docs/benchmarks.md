@@ -42,6 +42,13 @@ about 29 ms per worker.
   steep regions. We use exact trilinear interpolation with `textureLoad` instead (8 loads; the cost
   is negligible).
 
+- **10-bit readback of opaque hardware HEVC frames** (2026-11-28, Chrome on macOS, VideoToolbox):
+  a 10-bit luma ramp gives 254 distinct levels through every path the browser offers —
+  `VideoFrame.copyTo({ format: 'RGBA' })`, `copyExternalImageToTexture` into `rgb10a2unorm` or
+  `rgba16float`, and `importExternalTexture`. Chrome has no software HEVC decoder to fall back to.
+  So 10-bit HEVC shows 8-bit precision in Chrome on macOS; ProRes, AV1 and VP9 keep 10/12 bits.
+  Recheck when Chrome exposes P010 planes for hardware frames.
+
 ## GPU budget
 
 The display pass is a single fullscreen fragment shader: 1 or 2 texture loads, 8 LUT loads and

@@ -503,17 +503,18 @@ Basado en el estado del repo a esta fecha. Por prioridad; cada bloque es indepen
 
 ### P1 — Calidad de imagen y producto
 
-- **HEVC 10 bits pasa a RGBA8** (`opaque → RGBA8` en `docs/benchmarks.md`): se pierde la
-  precisión de 10 bits en el formato más habitual de entrega. Copiar el `VideoFrame` a planos
-  P010 (`copyTo` con `format` cuando el navegador lo permita) o `importExternalTexture` +
-  conversión propia; medir banding con rampas de test.
+- ~~**HEVC 10 bits pasa a RGBA8**~~ — medido el 2026-11-28: todas las vías de Chrome (copyTo,
+  copyExternalImageToTexture a 10/16 bits, importExternalTexture) dan 8 bits con el decoder
+  hardware de macOS. No se puede arreglar desde nuestro lado; ver `docs/benchmarks.md`.
 - **Fase 14 (exportar/importar look: CDL/CC/CCC, CLF, .cube con error medido)**: es lo que da
   sentido al grading fuera del navegador. Empezar por CDL (trivial) y CLF.
-- **Tamaño del bundle**: `scenegrade-player.js` = 199 KB gz (objetivo del plan: core < 150 KB gz).
-  Revisar con `rollup-plugin-visualizer`; candidatos: UI de grade (lazy al abrir la página
-  Color), `color/generated.ts` (711 líneas), scopes.
+- ~~**Tamaño del bundle**~~ — hecho el 2026-11-28: Mediabunny (53 % del JS) se carga al abrir un
+  vídeo. `scenegrade-player.js` pasa de 199.7 a 99.7 KB gz; el chunk de vídeo son 116 KB gz.
 - **Timestamp queries de GPU** en la UI (detectadas pero sin cablear): necesario para vigilar el
   presupuesto de 8 ms / 2 ms y la Fase 16 (secundarias).
+
+- ~~**e2e en CI**~~ — hecho el 2026-11-28: se saltaban todos (sin adaptador) y en los PR el canvas
+  no se presentaba. Arreglado con ANGLE sobre SwiftShader; en CI ahora falla si no hay adaptador.
 
 ### P2 — Mantenibilidad
 

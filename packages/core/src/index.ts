@@ -49,7 +49,7 @@ export {
   type SequenceItem,
 } from './media/sequence.js';
 export { configureExrPool } from './media/exr-source.js';
-export { ensureProres } from './media/video-source.js';
+export { ensureProres } from './media/open.js';
 export type * from './media/types.js';
 export * as color from './color/index.js';
 export * as grade from './grade/index.js';

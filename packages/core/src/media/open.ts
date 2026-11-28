@@ -7,8 +7,19 @@ import {
   type SequenceItem,
 } from './sequence.js';
 import { ExrSource } from './exr-source.js';
-import { VideoSource } from './video-source.js';
 import { BrowserImageSource } from './image-source.js';
+
+/** Video support (Mediabunny, about half of the bundle) is only fetched when a video is opened. */
+async function openVideo(src: File | Blob | string, o: { name: string; signal?: AbortSignal }) {
+  const { VideoSource } = await import('./video-source.js');
+  return VideoSource.open(src, o);
+}
+
+/** Registers the TurboRes ProRes decoder ahead of time (loads the video module on demand). */
+export async function ensureProres(): Promise<void> {
+  const m = await import('./video-source.js');
+  return m.ensureProres();
+}
 
 export const VIDEO_EXTENSIONS = ['mov', 'mp4', 'm4v', 'mkv', 'webm', 'mxf'];
 export const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp', 'avif', 'gif'];
@@ -51,8 +62,7 @@ function openItems(items: SequenceItem[], name: string, o: OpenOptions): Promise
       signal: o.signal,
     });
   if (items.length === 1) {
-    if (VIDEO_EXTENSIONS.includes(ext))
-      return VideoSource.open(items[0].src, { name, signal: o.signal });
+    if (VIDEO_EXTENSIONS.includes(ext)) return openVideo(items[0].src, { name, signal: o.signal });
     if (IMAGE_EXTENSIONS.includes(ext))
       return BrowserImageSource.open(items[0].src, { name, signal: o.signal });
   }
@@ -75,7 +85,7 @@ export async function openMedia(input: MediaInput, o: OpenOptions = {}): Promise
     const name = input instanceof File ? input.name : 'blob';
     const ext = extensionOf(name);
     if (!ext && input.type.startsWith('video/'))
-      return VideoSource.open(input, { name, signal: o.signal });
+      return openVideo(input, { name, signal: o.signal });
     return openItems([{ name, frame: 0, src: input }], name, o);
   }
   const files = Array.from(input as ArrayLike<File>);
