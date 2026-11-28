@@ -5,6 +5,10 @@ updates:
     schedule: { interval: weekly }
     groups:
       dev: { dependency-type: development }
+    ignore:
+      # svelte-check does not support TypeScript 7 yet (needs TS 6 alongside + --tsgo).
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
     schedule: { interval: monthly }

@@ -12,3 +12,4 @@ __pycache__/
 .claude/settings.local.json
 /packages/exr-wasm/dist-wasm/
 /apps/demo/public/media/local/
+.svelte-kit/

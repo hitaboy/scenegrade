@@ -485,3 +485,47 @@ etalonado vs original: `Player.setCompareOriginal`, interruptor Split en GradePa
   se comparte con otros trabajos.
 - **Acceso a hitazot:** `ssh hitazot` (clave `~/.ssh/hitazot_ed25519`); documentación en `/srv/ai`
   (README.md, COMMENTS.md).
+
+## 10. Plan de mejoras (2026-11-28)
+
+Basado en el estado del repo a esta fecha. Por prioridad; cada bloque es independiente.
+
+### P0 — Higiene (≈ 1 día)
+
+- **`packages/svelte/.svelte-kit/` está versionado** (42 ficheros, copia vieja de los componentes:
+  `ScenePlayer.svelte` 492 líneas vs 565 en `src`). Añadir `.svelte-kit/` a `.gitignore` y
+  `git rm -r --cached`.
+- **Dependabot: 8 PRs abiertos.** Fusionar los verdes (#7, #8 mediabunny 1.66.2; #1–#5 actions,
+  comprobando cambios de inputs en `setup-node@7` y `changesets/action@2`). **#9 falla** porque
+  sube TypeScript a 7 y `svelte-check` exige TS 6 + `--tsgo`: fijar `typescript` a `~6.0` en
+  `dependabot.yml` (ignore major) hasta que svelte-check soporte TS 7.
+- `npm deprecate @scenegrade/element@0.0.0-stage` y confirmar Trusted Publisher por paquete.
+
+### P1 — Calidad de imagen y producto
+
+- **HEVC 10 bits pasa a RGBA8** (`opaque → RGBA8` en `docs/benchmarks.md`): se pierde la
+  precisión de 10 bits en el formato más habitual de entrega. Copiar el `VideoFrame` a planos
+  P010 (`copyTo` con `format` cuando el navegador lo permita) o `importExternalTexture` +
+  conversión propia; medir banding con rampas de test.
+- **Fase 14 (exportar/importar look: CDL/CC/CCC, CLF, .cube con error medido)**: es lo que da
+  sentido al grading fuera del navegador. Empezar por CDL (trivial) y CLF.
+- **Tamaño del bundle**: `scenegrade-player.js` = 199 KB gz (objetivo del plan: core < 150 KB gz).
+  Revisar con `rollup-plugin-visualizer`; candidatos: UI de grade (lazy al abrir la página
+  Color), `color/generated.ts` (711 líneas), scopes.
+- **Timestamp queries de GPU** en la UI (detectadas pero sin cablear): necesario para vigilar el
+  presupuesto de 8 ms / 2 ms y la Fase 16 (secundarias).
+
+### P2 — Mantenibilidad
+
+- Ficheros grandes a partir: `player/player.ts` (1151), `GradePanel.svelte` (1029),
+  `gpu/renderer.ts` (812). Separar en `player`: fuentes/caché/reloj/compare; en `GradePanel`:
+  una sección por herramienta.
+- **Tests**: solo 6 ficheros de unit + 1 e2e. Añadir tests de `video-source.ts` (seek, bucle,
+  dropped frames) y de regresión visual (capturas del visor por transform, con tolerancia ΔE).
+- Medir cobertura en CI (`vitest --coverage`) sin umbral al principio.
+
+### P3 — Alcance (según interés)
+
+- Fase 15 (render en el cliente) tras la 14.
+- Compatibilidad: probar Safari 26 y Firefox en la matriz de e2e (hoy solo Chrome).
+- Media del README con persona (ver §9), pendiente de confirmar uso de GPU de hitazot.
