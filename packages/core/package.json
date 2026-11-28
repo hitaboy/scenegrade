@@ -36,9 +36,9 @@
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.74",
-    "@types/node": "^22.0.0",
+    "@types/node": "^26.6.10",
     "typescript": "~6.0.3",
-    "vitest": "^4.0.0"
+    "vitest": "^5.1.1"
   },
   "publishConfig": {
     "exports": {
