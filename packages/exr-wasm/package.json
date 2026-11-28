@@ -1,6 +1,6 @@
 {
   "name": "@scenegrade/exr-wasm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "OpenEXR (OpenEXRCore) decoder compiled to WebAssembly, with a Web Worker pool. All production compressions incl. PIZ, DWAA/DWAB, B44, HTJ2K.",
   "license": "Apache-2.0",
   "type": "module",

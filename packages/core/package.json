@@ -1,6 +1,6 @@
 {
   "name": "@scenegrade/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Headless WebGPU engine for colour grading and ACES-managed playback of EXR, ProRes and video: node grade, colour pipeline, scopes, overlays and frame-accurate playback.",
   "license": "Apache-2.0",
   "type": "module",

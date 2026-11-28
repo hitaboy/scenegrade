@@ -1,6 +1,6 @@
 {
   "name": "@scenegrade/element",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "<scenegrade-player>: drop-in Web Component for colour grading and ACES-managed review of EXR, ProRes and video, with scopes, false colour and zebra.",
   "license": "Apache-2.0",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@scenegrade/svelte",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Svelte 5 components for scenegrade: grade palette (wheels, curves, HSL), viewer, scopes, transport and panels.",
   "license": "Apache-2.0",
   "type": "module",
