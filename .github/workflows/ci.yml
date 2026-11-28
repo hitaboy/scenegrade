@@ -39,7 +39,7 @@ jobs:
 
       - name: Cache OpenEXR WASM build
         id: wasm-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: packages/exr-wasm/dist-wasm
           key: exr-wasm-${{ hashFiles('packages/exr-wasm/scripts/**', 'packages/exr-wasm/src-c/**') }}
