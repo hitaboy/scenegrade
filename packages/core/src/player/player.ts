@@ -992,6 +992,11 @@ export class Player {
   }
 
   /** Ends a coalesced edit (call on pointer up) so the next change is its own undo step. */
+  /** Starts a gesture (pointer down on a wheel or curve): its edits are one undo step until `commitGradeEdit()`. */
+  beginGradeEdit(): void {
+    this.history.hold();
+  }
+
   commitGradeEdit(): void {
     this.history.break();
   }

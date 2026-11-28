@@ -378,6 +378,27 @@ describe('history', () => {
     expect(h.canRedo).toBe(false);
     expect(h.undo(g1)!.nodes[0].mix).toBe(0.4);
   });
+
+  it('a gesture (hold … break) is one step however slow, and the next one is a new step', () => {
+    let t = 0;
+    const h = new GradeHistory({ now: () => t });
+    const g = (mix: number) => normalizeGrade({ nodes: [{ mix }] });
+    h.hold();
+    for (let i = 0; i < 5; i++) {
+      h.record(g(1 - i * 0.1), 'wheel:gain');
+      t += 5000; // a slow drag with long pauses
+    }
+    h.break();
+    h.hold();
+    h.record(g(0.5), 'wheel:gain');
+    h.break();
+    t += 100;
+    h.record(g(0.4), 'wheel:gain'); // not in a gesture: after break, a new step
+    expect(h.undo(g(0.3))!.nodes[0].mix).toBe(0.4);
+    expect(h.undo(g(0.4))!.nodes[0].mix).toBe(0.5);
+    expect(h.undo(g(0.5))!.nodes[0].mix).toBe(1);
+    expect(h.canUndo).toBe(false);
+  });
 });
 
 describe('Player grade API', () => {

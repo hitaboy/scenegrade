@@ -107,7 +107,10 @@ describe('Player.update', () => {
     const p = new Player();
     const proxy = <T extends object>(o: T): T => new Proxy(o, {});
     const wipe = proxy({ ...p.settings.compare, mode: 'off' as const });
-    p.update({ compare: wipe, cdl: proxy({ ...p.settings.cdl, slope: proxy([1, 2, 3]) as never }) });
+    p.update({
+      compare: wipe,
+      cdl: proxy({ ...p.settings.cdl, slope: proxy([1, 2, 3]) as never }),
+    });
     expect(() => structuredClone(p.settings)).not.toThrow();
     expect(p.settings.cdl.slope).toEqual([1, 2, 3]);
     p.dispose();

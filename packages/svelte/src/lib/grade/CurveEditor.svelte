@@ -19,6 +19,7 @@
     background = 'none',
     label,
     onchange,
+    onbegin,
     oncommit,
   }: {
     points: Pts;
@@ -29,6 +30,8 @@
     background?: 'none' | 'hue' | 'luma';
     label: string;
     onchange: (p: Pts) => void;
+    /** Pointer down: a gesture starts (one undo step until `oncommit`). */
+    onbegin?: () => void;
     oncommit?: () => void;
   } = $props();
 
@@ -102,6 +105,7 @@
     oncommit?.();
   }
   function down(e: PointerEvent) {
+    onbegin?.();
     const { x, y } = local(e);
     let i = hit(x, y);
     if (i >= 0 && e.altKey) {
@@ -157,7 +161,7 @@
     } else onchange(p);
   }
   function up() {
-    if (drag >= 0) oncommit?.();
+    oncommit?.(); // always: ends the gesture started on pointer down
     drag = -1;
   }
   function dbl(e: MouseEvent) {

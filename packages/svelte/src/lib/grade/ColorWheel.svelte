@@ -19,6 +19,7 @@
     readout,
     onrgb,
     onmaster,
+    onbegin,
     oncommit,
     size = 120,
   }: {
@@ -36,6 +37,8 @@
     readout: RGB;
     onrgb: (v: RGB) => void;
     onmaster: (v: number) => void;
+    /** Pointer down: a gesture starts (one undo step until `oncommit`). */
+    onbegin?: () => void;
     oncommit?: () => void;
     size?: number;
   } = $props();
@@ -71,6 +74,7 @@
     onrgb(puckToRgb(x + dx, y + dy));
   }
   function down(e: PointerEvent) {
+    onbegin?.();
     disc.setPointerCapture(e.pointerId);
     last = { x: e.clientX, y: e.clientY };
   }
@@ -106,6 +110,7 @@
   const clampM = (v: number) =>
     Math.min(masterMax, Math.max(masterMin, Math.round(v / masterStep) * masterStep));
   function tdown(e: PointerEvent) {
+    onbegin?.();
     thumb.setPointerCapture(e.pointerId);
     lastThumb = e.clientX;
   }

@@ -89,6 +89,10 @@ export class PlayerController {
     });
   }
 
+  beginEdit(): void {
+    this.player.beginGradeEdit();
+  }
+
   commitEdit(): void {
     this.player.commitGradeEdit();
   }

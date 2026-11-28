@@ -13,6 +13,7 @@
 
   const n = $derived(ctl.node);
   const g = $derived(ctl.grade);
+  const begin = () => ctl.beginEdit();
   const commit = () => ctl.commitEdit();
   const LR = 0.2722287168;
   const LG = 0.6740817658;
@@ -400,6 +401,7 @@
                   readout={wheelReadout(w.k)}
                   onrgb={(c) => setWheel(w.k, c)}
                   onmaster={(m) => setMaster(w.k, m)}
+                  onbegin={begin}
                   oncommit={commit}
                 />
               {/each}
@@ -496,6 +498,7 @@
                   readout={n.logWheels[w.k]}
                   onrgb={(c) => setLog(w.k, c)}
                   onmaster={(m) => setLog(w.k, logRgb(w.k), m)}
+                  onbegin={begin}
                   oncommit={commit}
                 />
               {/each}
@@ -535,6 +538,7 @@
                 points={n.curves[curveCh]}
                 stroke={chColor[curveCh]}
                 onchange={(p) => ctl.editNode({ curves: { [curveCh]: p } }, `curve:${curveCh}`)}
+                onbegin={begin}
                 oncommit={commit}
               />
             </div>
@@ -585,6 +589,7 @@
                 yMax={d.y}
                 background={d.bg}
                 onchange={(p) => ctl.editNode({ curves: { [hsl]: p } }, `curve:${hsl}`)}
+                onbegin={begin}
                 oncommit={commit}
               />
             </div>

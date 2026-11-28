@@ -24,7 +24,12 @@ const grade = (...edit: ((n: GradeNode) => void)[]): Grade => {
   return g;
 };
 
-const CDL_A: CDL = { slope: [1.1, 0.95, 1.02], offset: [0.01, -0.02, 0.005], power: [0.9, 1.05, 1], sat: 0.85 };
+const CDL_A: CDL = {
+  slope: [1.1, 0.95, 1.02],
+  offset: [0.01, -0.02, 0.005],
+  power: [0.9, 1.05, 1],
+  sat: 0.85,
+};
 
 describe('ASC CDL', () => {
   it('a CDL-only node exports exactly', () => {
@@ -53,7 +58,17 @@ describe('ASC CDL', () => {
   });
 
   it('reports the error of a look a CDL cannot express', () => {
-    const r = gradeToCdl(grade((n) => (n.curves.y = [[0, 0], [0.3, 0.45], [0.7, 0.6], [1, 1]])));
+    const r = gradeToCdl(
+      grade(
+        (n) =>
+          (n.curves.y = [
+            [0, 0],
+            [0.3, 0.45],
+            [0.7, 0.6],
+            [1, 1],
+          ]),
+      ),
+    );
     expect(r.exact).toBe(false);
     expect(r.error.max).toBeGreaterThan(0.005);
   });
@@ -89,7 +104,11 @@ describe('.cube', () => {
     const g = grade((n) => {
       n.primaries.gain = [1.1, 1, 0.9, 1];
       n.primaries.saturation = 1.2;
-      n.curves.y = [[0, 0], [0.4, 0.45], [1, 1]];
+      n.curves.y = [
+        [0, 0],
+        [0.4, 0.45],
+        [1, 1],
+      ];
     });
     const r33 = gradeToCube(g, { size: 33, title: 'test' });
     const lut = parseCubeLut(r33.text);
@@ -109,7 +128,11 @@ describe('project JSON', () => {
   it('round-trips a grade exactly and also accepts a bare grade', () => {
     const g = grade(
       (n) => (n.primaries.lift = [0.01, 0, 0, 0.02]),
-      (n) => (n.curves.hueSat = [[0.1, 0.2], [0.6, -0.1]]),
+      (n) =>
+        (n.curves.hueSat = [
+          [0.1, 0.2],
+          [0.6, -0.1],
+        ]),
     );
     expect(gradeFromJson(gradeToJson(g))).toEqual(g);
     expect(gradeFromJson(JSON.stringify(g))).toEqual(g);

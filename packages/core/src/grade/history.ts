@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // Undo / redo for grades. Continuous edits (dragging a wheel) are coalesced into one step when
-// they share a `coalesce` key and arrive within `windowMs` of each other.
+// they share a `coalesce` key and arrive within `windowMs` of each other, or, inside a gesture
+// (`hold()` … `break()`, i.e. pointer down … up), however slowly they arrive.
 
 import { cloneGrade, type Grade } from './model.js';
 
@@ -15,6 +16,7 @@ export class GradeHistory {
   private future: Grade[] = [];
   private lastKey: string | null = null;
   private lastTime = 0;
+  private holding = false;
   private readonly limit: number;
   private readonly windowMs: number;
   private readonly now: () => number;
@@ -32,7 +34,9 @@ export class GradeHistory {
   record(before: Grade, coalesce?: string): void {
     const t = this.now();
     const merge =
-      coalesce != null && coalesce === this.lastKey && t - this.lastTime < this.windowMs;
+      coalesce != null &&
+      coalesce === this.lastKey &&
+      (this.holding || t - this.lastTime < this.windowMs);
     this.lastKey = coalesce ?? null;
     this.lastTime = t;
     this.future = [];
@@ -41,16 +45,23 @@ export class GradeHistory {
     if (this.past.length > this.limit) this.past.shift();
   }
 
+  /** Starts a gesture (pointer down): its edits form one new step until `break()`. */
+  hold(): void {
+    this.lastKey = null;
+    this.holding = true;
+  }
+
   /** Ends any coalescing run (e.g. on pointer up) so the next edit is a new step. */
   break(): void {
     this.lastKey = null;
+    this.holding = false;
   }
 
   undo(current: Grade): Grade | null {
     const g = this.past.pop();
     if (!g) return null;
     this.future.push(cloneGrade(current));
-    this.lastKey = null;
+    this.break();
     return g;
   }
 
@@ -58,7 +69,7 @@ export class GradeHistory {
     const g = this.future.pop();
     if (!g) return null;
     this.past.push(cloneGrade(current));
-    this.lastKey = null;
+    this.break();
     return g;
   }
 
@@ -72,6 +83,6 @@ export class GradeHistory {
   clear(): void {
     this.past = [];
     this.future = [];
-    this.lastKey = null;
+    this.break();
   }
 }

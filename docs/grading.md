@@ -58,7 +58,8 @@ checks on-screen pixels against `applyViewCPU(probe.graded)` to within 2.5/255.
 ```ts
 player.setGrade(json, { history: true | false | 'drag-key' });
 player.updateGradeNode(nodeId | null, { primaries: { contrast: 1.2 } }, { history: 'contrast' });
-player.commitGradeEdit(); // on pointer up: end the coalesced undo step
+player.beginGradeEdit(); // on pointer down: the gesture is one undo step…
+player.commitGradeEdit(); // …until pointer up
 player.undo();
 player.redo();
 player.getGrade(); // deep copy
