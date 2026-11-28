@@ -7,7 +7,9 @@ async function setup(page: Page) {
   const gpu = await page.evaluate(
     async () => !!(navigator.gpu && (await navigator.gpu.requestAdapter())),
   );
-  test.skip(!gpu, 'WebGPU adapter not available in this browser');
+  // In CI a missing adapter is a broken setup, not a reason to skip (it once hid every test).
+  if (process.env.CI) expect(gpu, 'WebGPU adapter in CI').toBe(true);
+  else test.skip(!gpu, 'WebGPU adapter not available in this browser');
   await page.waitForFunction(() => (globalThis as any).scenegrade);
 }
 

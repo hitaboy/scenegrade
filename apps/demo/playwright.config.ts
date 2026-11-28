@@ -19,7 +19,12 @@ export default defineConfig({
         process.platform === 'darwin'
           ? ['--enable-unsafe-webgpu', '--use-angle=metal', '--ignore-gpu-blocklist']
           : [
+              // Without ANGLE on SwiftShader the compositor cannot import WebGPU swap chains: the
+              // canvas never presents and the adapter is lost between tests.
               '--enable-unsafe-webgpu',
+              '--enable-unsafe-swiftshader',
+              '--use-angle=swiftshader',
+              '--use-gl=angle',
               '--enable-features=Vulkan',
               '--use-vulkan=swiftshader',
               '--use-webgpu-adapter=swiftshader',
