@@ -58,8 +58,8 @@ importers:
   packages/core:
     dependencies:
       '@mediabunny/prores':
-        specifier: ^1.66.1
-        version: 1.66.1(mediabunny@1.66.1)
+        specifier: ^1.66.4
+        version: 1.66.4(mediabunny@1.66.1)
       '@scenegrade/exr-wasm':
         specifier: workspace:*
         version: link:../exr-wasm
@@ -264,8 +264,8 @@ packages:
     resolution: {integrity: sha512-6QEf6yqFbETdwGITKq57aYoPfX/3K8XFNwsAlx0C1M7o8cb79sv1M3w+tWuWvIcSbNqrLF7OD7YpZMVVz335hQ==}
     engines: {node: '>=20.0.0'}
 
-  '@mediabunny/prores@1.66.1':
-    resolution: {integrity: sha512-sI/U3EcdfY1GgDPUcmaySX0NI8lqZklo295Ze4A5ku7KNudLX1NqOT7OborHkzyXcBO53Qy0YlP3z91czqDZHQ==}
+  '@mediabunny/prores@1.66.4':
+    resolution: {integrity: sha512-XpIQV9gDiHkK91RfyaBgp3BQtju1dQJLZ9IyeGFLmaxLE/GLHncWoYeLettI4Ugf2YNSw4ZTD98KT24Y0oaU4A==}
     peerDependencies:
       mediabunny: ^1.49.0
 
@@ -815,8 +815,8 @@ packages:
   tslib@2.9.1:
     resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
 
-  turbores@1.2.5:
-    resolution: {integrity: sha512-497/HsPiZDLU74mdoKWs/u6AtLBwOjLeOXbc3x9SuJRFOSw2yckEoBtz7t0GdjZC5qHhCP95L2QmH0a/ZqRWHw==}
+  turbores@1.2.6:
+    resolution: {integrity: sha512-8VYogWTSNe6UgPJDhhvqpVmAUb2+HEd4i6xwny5vGzumeVVeooZrDYvCqHW325BgfmRBjwdDx5Dt9SmUwQGP9Q==}
 
   typescript@6.0.3:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
@@ -1100,10 +1100,10 @@ snapshots:
       tinyglobby: 0.2.17
       yaml: 2.9.1
 
-  '@mediabunny/prores@1.66.1(mediabunny@1.66.1)':
+  '@mediabunny/prores@1.66.4(mediabunny@1.66.1)':
     dependencies:
       mediabunny: 1.66.1
-      turbores: 1.2.5
+      turbores: 1.2.6
 
   '@napi-rs/wasm-runtime@1.2.6(@emnapi/core@2.0.0-beta.2)(@emnapi/runtime@2.0.0-beta.2)':
     dependencies:
@@ -1564,7 +1564,7 @@ snapshots:
   tslib@2.9.1:
     optional: true
 
-  turbores@1.2.5:
+  turbores@1.2.6:
     optionalDependencies:
       '@rollup/rollup-linux-x64-gnu': 4.62.1
 
