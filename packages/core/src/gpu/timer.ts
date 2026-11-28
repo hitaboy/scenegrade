@@ -19,6 +19,8 @@ export interface GpuMeasure {
  */
 export class GpuTimer {
   readonly ms: Record<GpuPass, number> = { decode: 0, display: 0, scopes: 0 };
+  /** Called after each new measurement (from a promise callback). */
+  onUpdate: (() => void) | null = null;
   private readonly querySet: GPUQuerySet;
   private readonly resolveBuf: GPUBuffer;
   private readonly readback: GPUBuffer[] = [];
@@ -82,6 +84,7 @@ export class GpuTimer {
             if (ns >= 0 && ns < 1e9) {
               const ms = ns / 1e6;
               this.ms[pass] = this.ms[pass] ? this.ms[pass] * 0.8 + ms * 0.2 : ms;
+              this.onUpdate?.();
             }
           },
           () => {

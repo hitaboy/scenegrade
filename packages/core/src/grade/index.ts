@@ -18,3 +18,17 @@ export {
 export { applyGradeCPU, hueOf, rotateGrey } from './cpu.js';
 export { GRADE_WGSL, GRADE_BINDINGS_WGSL } from './wgsl.js';
 export { GradeHistory, type HistoryOptions } from './history.js';
+export {
+  gradeToCdl,
+  writeCdl,
+  parseCdl,
+  cdlNode,
+  gradeToCube,
+  gradeToJson,
+  gradeFromJson,
+  type CdlExport,
+  type CdlFormat,
+  type ParsedCdl,
+  type CubeExport,
+  type LookError,
+} from './interchange.js';

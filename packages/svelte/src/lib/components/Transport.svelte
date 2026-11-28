@@ -232,8 +232,10 @@
     border-color: var(--sg-accent);
   }
   .stats {
-    display: flex;
-    flex-direction: column;
+    /* Two columns so fps · decode · GPU · cache fit in the bar's height. */
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 8px;
     min-width: 64px;
     color: var(--sg-text-faint);
     font: var(--sg-text-xs) var(--sg-font-mono);

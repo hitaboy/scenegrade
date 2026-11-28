@@ -4,6 +4,7 @@
   import Slider from '../components/Slider.svelte';
   import Toggle from '../components/Toggle.svelte';
   import IconButton from '../components/IconButton.svelte';
+  import Select from '../components/Select.svelte';
   import ColorWheel from './ColorWheel.svelte';
   import CurveEditor from './CurveEditor.svelte';
   import type { RGB } from './wheel.js';
@@ -66,25 +67,79 @@
   }
 
   // ---- file I/O ---------------------------------------------------------------------------
+  // Exports: project JSON (exact), ASC CDL (exact for a CDL node, otherwise fitted) and 3D .cube
+  // (ACEScct in/out). The error of approximate exports is measured and shown.
   let fileInput: HTMLInputElement;
-  function save() {
-    const blob = new Blob([JSON.stringify(ctl.player.getGrade(), null, 2)], {
-      type: 'application/json',
-    });
+  let ioError = $state('');
+  let ioNote = $state('');
+  const exportOptions = [
+    { value: '', label: 'Export…' },
+    { value: 'json', label: 'Project (.json)' },
+    { value: 'cc', label: 'ASC CDL (.cc)' },
+    { value: 'ccc', label: 'ASC CDL collection (.ccc)' },
+    { value: 'cdl', label: 'ASC CDL list (.cdl)' },
+    { value: 'cube33', label: '3D LUT .cube (33)' },
+    { value: 'cube65', label: '3D LUT .cube (65)' },
+  ];
+  const baseName = () => (ctl.state.media?.name ?? 'grade').replace(/\.[^.]+$/, '');
+  function download(text: string, name: string, type: string) {
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${(ctl.state.media?.name ?? 'grade').replace(/\.[^.]+$/, '')}.grade.json`;
+    a.href = URL.createObjectURL(new Blob([text], { type }));
+    a.download = name;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
-  let ioError = $state('');
+  const cv = (e: G.LookError) => `${e.maxCodeValues.toFixed(2)} code values (10-bit)`;
+  // The menu is an action list: re-created after each pick so it shows "Export…" again.
+  let exportCount = $state(0);
+  function exportAs(kind: string) {
+    if (!kind) return;
+    exportCount++;
+    const grade = ctl.player.getGrade();
+    const name = baseName();
+    ioError = '';
+    if (kind === 'json') {
+      download(G.gradeToJson(grade), `${name}.grade.json`, 'application/json');
+      ioNote = '';
+    } else if (kind === 'cc' || kind === 'ccc' || kind === 'cdl') {
+      const r = G.gradeToCdl(grade);
+      const description = [
+        'Working space: ACEScct',
+        r.exact ? 'Exact CDL' : `Fitted by scenegrade, max error ${cv(r.error)}`,
+      ];
+      const xml = G.writeCdl(r.cdl, { format: kind, id: name, description });
+      download(xml, `${name}.${kind}`, 'application/xml');
+      ioNote = r.exact
+        ? 'CDL: exact (ACEScct).'
+        : r.error.maxCodeValues < 0.01
+          ? 'CDL: matches the grade (ACEScct, error < 0.01 code values).'
+          : `CDL fitted to the grade (ACEScct): max error ${cv(r.error)}.`;
+    } else {
+      const size = kind === 'cube65' ? 65 : 33;
+      const r = G.gradeToCube(grade, { size, title: name });
+      download(r.text, `${name}_${size}.cube`, 'text/plain');
+      ioNote = `.cube ${size}³ (ACEScct in/out): max interpolation error ${cv(r.error)}.`;
+    }
+  }
   async function load(e: Event) {
     const f = (e.currentTarget as HTMLInputElement).files?.[0];
     (e.currentTarget as HTMLInputElement).value = '';
     if (!f) return;
     try {
-      ctl.player.setGrade(JSON.parse(await f.text()));
-      ctl.ui.gradeNode = '';
+      const text = await f.text();
+      ioNote = '';
+      if (/\.(cc|ccc|cdl)$/i.test(f.name)) {
+        // CDLs are added as new nodes after the current ones (a .ccc can hold several).
+        const next = ctl.player.getGrade();
+        const added = G.parseCdl(text).map((c) => G.cdlNode(c.cdl, c.id));
+        next.nodes.push(...added);
+        setGrade(next);
+        ctl.ui.gradeNode = added[added.length - 1].id;
+        ioNote = `Imported ${added.length} CDL${added.length > 1 ? 's' : ''} as new node${added.length > 1 ? 's' : ''}.`;
+      } else {
+        ctl.player.setGrade(G.gradeFromJson(text));
+        ctl.ui.gradeNode = '';
+      }
       ioError = '';
     } catch (err) {
       ioError = (err as Error).message;
@@ -174,7 +229,13 @@
   const f3 = (v: number) => v.toFixed(3);
 </script>
 
-<input bind:this={fileInput} type="file" accept=".json,application/json" hidden onchange={load} />
+<input
+  bind:this={fileInput}
+  type="file"
+  accept=".json,.cc,.ccc,.cdl,application/json"
+  hidden
+  onchange={load}
+/>
 
 <section class="gp" aria-label="Grade">
   <!-- Node strip -->
@@ -280,10 +341,18 @@
         disabled={!ctl.state.canRedo}
         onclick={() => ctl.player.redo()}
       />
-      <IconButton icon="download" label="Save grade (.json)" size={14} onclick={save} />
+      {#key exportCount}
+        <Select
+          label="Export"
+          compact
+          value=""
+          options={exportOptions}
+          onchange={(v) => exportAs(v)}
+        />
+      {/key}
       <IconButton
         icon="open"
-        label="Load grade (.json)"
+        label="Load grade (.json) or ASC CDL (.cc, .ccc, .cdl)"
         size={14}
         onclick={() => fileInput.click()}
       />
@@ -297,6 +366,7 @@
     </div>
   </div>
   {#if ioError}<div class="err" role="alert">{ioError}</div>{/if}
+  {#if ioNote && !ioError}<div class="note" role="status">{ioNote}</div>{/if}
 
   <div class="body">
     <div class="tabs" role="tablist" aria-orientation="vertical">
@@ -765,6 +835,11 @@
   .err {
     padding: 4px 10px;
     color: var(--sg-danger);
+  }
+  .note {
+    padding: 4px 10px;
+    color: var(--sg-text-muted);
+    font-size: var(--sg-text-xs);
   }
   .body {
     display: flex;

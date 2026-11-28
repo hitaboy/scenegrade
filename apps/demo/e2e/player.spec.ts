@@ -311,3 +311,57 @@ test('compare with original: graded on the A side, untouched on the B side', asy
   expect(r.splitR).toEqual(r.origR);
   expect(r.mode).toBe('off');
 });
+
+test('grade panel: export CDL / .cube with measured error, import a .ccc as nodes', async ({
+  page,
+}) => {
+  await setup(page);
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await load(page, `${base}exr/chart_zip.exr`);
+  await page.evaluate(() => {
+    const p = (globalThis as any).scenegrade.player;
+    p.setGrade({ nodes: [{ cdl: { enabled: true, slope: [1.1, 1, 0.9], saturation: 0.9 } }] });
+  });
+  await page.locator('.sg-player').focus();
+  await page.keyboard.press('e');
+  const menu = page.getByRole('combobox', { name: 'Export' });
+  await expect(menu).toBeVisible();
+
+  let dl = page.waitForEvent('download');
+  await menu.selectOption('cc');
+  const cc = await dl;
+  expect(cc.suggestedFilename()).toBe('chart_zip.cc');
+  const xml = await (
+    await cc.createReadStream()
+  )
+    .toArray()
+    .then((b) => Buffer.concat(b).toString());
+  expect(xml).toContain('<Slope>1.100000 1.000000 0.900000</Slope>');
+  await expect(page.getByRole('status').filter({ hasText: 'CDL: exact' })).toBeVisible();
+  await expect(menu).toHaveValue('');
+
+  dl = page.waitForEvent('download');
+  await menu.selectOption('cube33');
+  expect((await dl).suggestedFilename()).toBe('chart_zip_33.cube');
+  await expect(page.getByRole('status').filter({ hasText: 'interpolation error' })).toBeVisible();
+
+  const ccc = `<ColorCorrectionCollection xmlns="urn:ASC:CDL:v1.01">
+    <ColorCorrection id="a"><SOPNode><Slope>1.2 1 1</Slope><Offset>0 0 0</Offset><Power>1 1 1</Power></SOPNode></ColorCorrection>
+    <ColorCorrection id="b"><SatNode><Saturation>0.5</Saturation></SatNode></ColorCorrection>
+  </ColorCorrectionCollection>`;
+  await page
+    .locator('input[type=file][accept*=".ccc"]')
+    .setInputFiles({ name: 'look.ccc', mimeType: 'application/xml', buffer: Buffer.from(ccc) });
+  await expect(page.getByRole('status').filter({ hasText: 'Imported 2 CDLs' })).toBeVisible();
+  const nodes = await page.evaluate(() =>
+    (globalThis as any).scenegrade.player
+      .getGrade()
+      .nodes.map((n: any) => [n.label, n.cdl.saturation]),
+  );
+  expect(nodes.slice(1)).toEqual([
+    ['a', 1],
+    ['b', 0.5],
+  ]);
+  expect(errors).toEqual([]);
+});

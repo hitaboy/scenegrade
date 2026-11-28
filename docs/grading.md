@@ -73,3 +73,31 @@ player.state.gradeRevision; // changes on every edit; also canUndo / canRedo
 - **Web component:** `el.getGrade()`, `el.setGrade(json)`, `el.undo()`, `el.redo()`, and a
   `gradechange` event whose `detail` is `{ grade }`.
 - **Shortcuts:** ⌘Z / ⇧⌘Z (Ctrl on Windows and Linux).
+
+## Export and import (phase 14)
+
+Every exported look works in **ACEScct in and out**, so another tool applies it as
+`ACEScg → ACEScct → look → ACEScct → ACEScg → view transform`. In the UI: the **Export…** menu
+and the open button of the Grade panel.
+
+| Format                          | Fidelity                                                                                                                                                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Project `.json`                 | Exact: every node and stage.                                                                                                                                       |
+| ASC CDL `.cc/.ccc/.cdl` (v1.01) | Exact when the grade is one CDL-only node. Otherwise a least-squares fit (Nelder–Mead, about 50–150 ms); the max error is measured and written in `<Description>`. |
+| 3D `.cube` 33 / 65              | Sampled on the ACEScct cube 0–1 (about −0.015 to 222 linear). The trilinear error is measured on 6000 random samples and shown.                                    |
+
+Errors are reported in ACEScct units and in 10-bit code values (× 1023). Importing a CDL file
+adds one node per `<ColorCorrection>` (any schema version; missing nodes default to identity).
+`.cube` files load as the viewer LUT (Colour panel).
+
+```ts
+import { grade as G } from '@scenegrade/core';
+const g = player.getGrade();
+const { cdl, exact, error } = G.gradeToCdl(g); // error.maxCodeValues
+G.writeCdl(cdl, { format: 'ccc', id: 'sh010' });
+G.gradeToCube(g, { size: 65 }); // { text, error }
+G.gradeToJson(g); // and G.gradeFromJson(text)
+G.parseCdl(xml).map((c) => G.cdlNode(c.cdl, c.id)); // CDL file → grade nodes
+```
+
+Not done yet: CLF and AMF.

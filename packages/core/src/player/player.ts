@@ -190,6 +190,7 @@ export class Player {
     };
     this.rendererReady = Renderer.create().then(async (r) => {
       this.renderer = r;
+      if (r.timer) r.timer.onUpdate = this.onGpuTiming;
       this.scopes = new ScopeEngine(r);
       r.setGrade(this.packed);
       await this.applyView();
@@ -898,18 +899,24 @@ export class Player {
   /** Settings override for the B side (its own input space). */
   readonly settingsB: { inputSpace?: string } = {};
 
-  private lastGpuStat = 0;
+  private gpuStatTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** GPU time (timestamp queries, read back asynchronously) reaches `stats`, ≤ 4 updates/s. */
+  private onGpuTiming = () => {
+    if (this.gpuStatTimer || this.disposed) return;
+    this.gpuStatTimer = setTimeout(() => {
+      this.gpuStatTimer = null;
+      const t = this.renderer?.timer;
+      if (!t || this.disposed) return;
+      const gpuMs = Math.round(t.totalMs * 100) / 100;
+      if (gpuMs !== this.state.stats.gpuMs) this.set({ stats: { ...this.state.stats, gpuMs } });
+    }, 250);
+  };
 
   private draw(now: number): void {
     const r = this.renderer;
     if (!r) return;
     this.dirty = false;
-    // GPU time of the last frames (timestamp queries, read back asynchronously), ≤ 4 updates/s.
-    if (r.timer && now - this.lastGpuStat > 250) {
-      this.lastGpuStat = now;
-      const gpuMs = Math.round(r.timer.totalMs * 100) / 100;
-      if (gpuMs !== this.state.stats.gpuMs) this.set({ stats: { ...this.state.stats, gpuMs } });
-    }
     const a = this.sceneFor('a');
     const original = this.state.compareOriginal && !this.sourceB;
     const b = this.sourceB ? this.sceneFor('b') : original ? a : null;
@@ -1122,6 +1129,7 @@ export class Player {
   dispose(): void {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
+    if (this.gpuStatTimer) clearTimeout(this.gpuStatTimer);
     this.disposeSource();
     this.sourceB?.dispose();
     this.audio.dispose();

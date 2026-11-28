@@ -445,7 +445,7 @@ El audio se copia sin recodificar.
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------- | ------- |
 | **12. Motor de grade** ✅                | Modelo de datos, intérprete WGSL, referencia CPU y tests, undo/redo, API `getGrade/setGrade`      | 3       |
 | **13. Primarias + curvas + UI Grade** ✅ | Ruedas, log wheels, contraste/pivote, temperatura/tinte, curvas Y/RGB y HSL, layout Grade, stills | 4       |
-| **14. Exportar e importar el look**      | CDL/CC/CCC, CLF, .cube con error medido, AMF, proyecto .json                                      | 2       |
+| **14. Exportar e importar el look** ◐    | CDL/CC/CCC, CLF, .cube con error medido, AMF, proyecto .json                                      | 2       |
 | **15. Render en el cliente**             | VideoEncoder (H.264/HEVC/AV1) + mux + audio, writer EXR, File System Access, cola de render       | 3       |
 | **16. Secundarias**                      | Cualificador HSL, ventanas con softness, vista de máscara, nodos con mezcla, keyframes            | 4       |
 | **17. Extras**                           | ProRes encoder WASM, tracking, control surfaces (WebHID/MIDI), match de planos, sesiones en vivo  | —       |
@@ -506,8 +506,9 @@ Basado en el estado del repo a esta fecha. Por prioridad; cada bloque es indepen
 - ~~**HEVC 10 bits pasa a RGBA8**~~ — medido el 2026-11-28: todas las vías de Chrome (copyTo,
   copyExternalImageToTexture a 10/16 bits, importExternalTexture) dan 8 bits con el decoder
   hardware de macOS. No se puede arreglar desde nuestro lado; ver `docs/benchmarks.md`.
-- **Fase 14 (exportar/importar look: CDL/CC/CCC, CLF, .cube con error medido)**: es lo que da
-  sentido al grading fuera del navegador. Empezar por CDL (trivial) y CLF.
+- **Fase 14 (exportar/importar look)** — hecho el 2026-11-28: proyecto .json, ASC CDL
+  (.cc/.ccc/.cdl, exacto o ajustado con error medido), .cube 33/65 con error medido, importar CDL
+  como nodos (`docs/grading.md`). **Pendiente:** CLF y AMF.
 - ~~**Tamaño del bundle**~~ — hecho el 2026-11-28: Mediabunny (53 % del JS) se carga al abrir un
   vídeo. `scenegrade-player.js` pasa de 199.7 a 99.7 KB gz; el chunk de vídeo son 116 KB gz.
 - ~~**Timestamp queries de GPU**~~ — hecho el 2026-11-28: `Renderer.timer` (decode, display,
