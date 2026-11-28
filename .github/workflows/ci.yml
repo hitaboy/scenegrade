@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v7
       # Static FFmpeg (BtbN GPL build: x264, x265, SVT-AV1, prores_ks). Avoids apt, whose
       # Ubuntu mirrors on the runners are sometimes down.
       - name: Install ffmpeg
